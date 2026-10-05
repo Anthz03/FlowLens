@@ -30,82 +30,83 @@ Describe a process in plain words, see it as a diagram, find what slows it down,
 
 # Part 1 · Introduction
 
-## ✨ What is FlowLens?
+## <img src="docs/icons/sparkles.svg" width="24" height="24" align="absmiddle" alt=""> What is FlowLens?
 
 Most small businesses run on knowledge nobody wrote down. Orders, approvals and hand-overs follow habits that live in people's heads, spreadsheets and chat threads. That works until someone is away, a customer waits too long, or the business grows.
 
 **FlowLens** is a working prototype of an information system that helps SMEs **discover, document, visualize, analyze and improve** their business processes, without consultants and without process-modelling jargon.
 
-> 💡 **The idea in one line:** type how work happens → get a diagram → get a health score and a list of problems → generate a better version → compare the two.
+> [!TIP]
+> **The idea in one line:** type how work happens → get a diagram → get a health score and a list of problems → generate a better version → compare the two.
 
-## 🧭 How it works
+## <img src="docs/icons/compass.svg" width="24" height="24" align="absmiddle" alt=""> How it works
 
 | | Step | What you do |
 |---|---|---|
-| **1** | 🗣️ **Describe** | Type what happens in plain words (or fill in a simple form). Say who does each step and which tool they use. |
-| **2** | 🗺️ **See it** | FlowLens draws the process as a diagram you can edit by dragging boxes and arrows. |
-| **3** | 🩺 **Check it** | Get a **Process Health Score** and a clear list of manual tasks, slow steps, repeated steps and steps with nobody in charge. |
-| **4** | 🚀 **Improve it** | Create an improved **TO-BE** version in one click, then compare it with today's **AS-IS** process. |
+| **1** | <img src="docs/icons/message-square-text.svg" width="16" height="16" align="absmiddle" alt=""> **Describe** | Type what happens in plain words (or fill in a simple form). Say who does each step and which tool they use. |
+| **2** | <img src="docs/icons/workflow.svg" width="16" height="16" align="absmiddle" alt=""> **See it** | FlowLens draws the process as a diagram you can edit by dragging boxes and arrows. |
+| **3** | <img src="docs/icons/activity.svg" width="16" height="16" align="absmiddle" alt=""> **Check it** | Get a **Process Health Score** and a clear list of manual tasks, slow steps, repeated steps and steps with nobody in charge. |
+| **4** | <img src="docs/icons/rocket.svg" width="16" height="16" align="absmiddle" alt=""> **Improve it** | Create an improved **TO-BE** version in one click, then compare it with today's **AS-IS** process. |
 
-## 🖼️ Take a look
+## <img src="docs/icons/image.svg" width="24" height="24" align="absmiddle" alt=""> Take a look
 
-### 🗣️ Process Discovery: describe it like you would to a new hire
+### <img src="docs/icons/message-square-text.svg" width="20" height="20" align="absmiddle" alt=""> Process Discovery: describe it like you would to a new hire
 
 Not documented yet? Type one step per line (start a line with `Sales Rep:` to say who does it, end it with `?` for a decision). FlowLens detects roles, tools and decisions, and you review the result before creating the process.
 
 <img src="flowlens-images/2.png" alt="The Process Discovery wizard" width="100%">
 
-### 🩺 Process Analysis: one number, five reasons
+### <img src="docs/icons/activity.svg" width="20" height="20" align="absmiddle" alt=""> Process Analysis: one number, five reasons
 
 Every process gets a **Health Score out of 100**, broken down into Documentation, Automation, Role Clarity, Process Complexity and Efficiency, plus time per step and written recommendations.
 
 <img src="flowlens-images/3.png" alt="The Process Analysis page with health score, metrics and charts" width="100%">
 
-### 🗺️ Process Map: drag, connect, done
+### <img src="docs/icons/workflow.svg" width="20" height="20" align="absmiddle" alt=""> Process Map: drag, connect, done
 
 An editable React Flow diagram. Move boxes, add decisions, label branches and edit any step in the side panel. A hand icon means *manual*, a bolt means *automated*, and a red border marks a possible *bottleneck*.
 
 <img src="flowlens-images/4.png" alt="The editable process map with the step editor panel" width="100%">
 
-## 🧩 Features
+## <img src="docs/icons/puzzle.svg" width="24" height="24" align="absmiddle" alt=""> Features
 
 | Module | What it does |
 |---|---|
-| 🏠 **Dashboard** | Health scores, manual tasks, bottlenecks, where the time goes (by hand vs by system), top issues and suggestions based on your goals |
-| 📁 **Process Repository** | Search and filter all processes; each card shows a small "process strip" of its steps |
-| ➕ **Create / Edit Process** | Name, department, status and steps, each with role, department, tool, inputs, outputs, time and manual/automated |
-| 🧭 **Process Discovery** | Plain-words wizard that turns informal text into structured steps |
-| 🗺️ **Process Map** | Editable flow diagram with decision branches, auto-layout and a side editing panel |
-| 🩺 **Process Analysis** | Rule-based analysis and health score with recommendations |
-| ⚖️ **AS-IS vs TO-BE** | Side-by-side comparison with percentage improvement and a "what changed" list |
-| 📄 **Process Details** | Roles, departments, tools, steps, inputs and outputs in one place |
-| 🔐 **Accounts** | Email + password sign-in (optional Google sign-in), one private workspace per business |
-| 🎓 **Guided onboarding** | A short setup questionnaire, then a 17-step interactive tour of every page |
+| <img src="docs/icons/layout-dashboard.svg" width="16" height="16" align="absmiddle" alt=""> **Dashboard** | Health scores, manual tasks, bottlenecks, where the time goes (by hand vs by system), top issues and suggestions based on your goals |
+| <img src="docs/icons/folder-kanban.svg" width="16" height="16" align="absmiddle" alt=""> **Process Repository** | Search and filter all processes; each card shows a small "process strip" of its steps |
+| <img src="docs/icons/circle-plus.svg" width="16" height="16" align="absmiddle" alt=""> **Create / Edit Process** | Name, department, status and steps, each with role, department, tool, inputs, outputs, time and manual/automated |
+| <img src="docs/icons/compass.svg" width="16" height="16" align="absmiddle" alt=""> **Process Discovery** | Plain-words wizard that turns informal text into structured steps |
+| <img src="docs/icons/workflow.svg" width="16" height="16" align="absmiddle" alt=""> **Process Map** | Editable flow diagram with decision branches, auto-layout and a side editing panel |
+| <img src="docs/icons/activity.svg" width="16" height="16" align="absmiddle" alt=""> **Process Analysis** | Rule-based analysis and health score with recommendations |
+| <img src="docs/icons/git-compare.svg" width="16" height="16" align="absmiddle" alt=""> **AS-IS vs TO-BE** | Side-by-side comparison with percentage improvement and a "what changed" list |
+| <img src="docs/icons/file-text.svg" width="16" height="16" align="absmiddle" alt=""> **Process Details** | Roles, departments, tools, steps, inputs and outputs in one place |
+| <img src="docs/icons/lock.svg" width="16" height="16" align="absmiddle" alt=""> **Accounts** | Email + password sign-in (optional Google sign-in), one private workspace per business |
+| <img src="docs/icons/graduation-cap.svg" width="16" height="16" align="absmiddle" alt=""> **Guided onboarding** | A short setup questionnaire, then a 17-step interactive tour of every page |
 
-## 🔍 How the analysis works
+## <img src="docs/icons/search.svg" width="24" height="24" align="absmiddle" alt=""> How the analysis works
 
 FlowLens uses **simple, transparent rules**, not AI. You can read them in [`server/src/services/analyzer.js`](server/src/services/analyzer.js).
 
 | It looks for | Rule |
 |---|---|
-| ✋ **Manual tasks** | A task marked as performed manually |
-| 🐢 **Bottlenecks** | A step of 45+ minutes, or 20+ minutes and more than twice the average |
-| 🔁 **Excessive handoffs** | Connected steps owned by different roles (flagged when there are many) |
-| 👯 **Duplicate steps** | Two steps with very similar names |
-| 🙋 **Unclear responsibility** | A step with no role, or a role with no department |
-| 📝 **Poor documentation** | Missing descriptions, tools, inputs or outputs |
+| <img src="docs/icons/hand.svg" width="16" height="16" align="absmiddle" alt=""> **Manual tasks** | A task marked as performed manually |
+| <img src="docs/icons/timer.svg" width="16" height="16" align="absmiddle" alt=""> **Bottlenecks** | A step of 45+ minutes, or 20+ minutes and more than twice the average |
+| <img src="docs/icons/shuffle.svg" width="16" height="16" align="absmiddle" alt=""> **Excessive handoffs** | Connected steps owned by different roles (flagged when there are many) |
+| <img src="docs/icons/copy.svg" width="16" height="16" align="absmiddle" alt=""> **Duplicate steps** | Two steps with very similar names |
+| <img src="docs/icons/user-x.svg" width="16" height="16" align="absmiddle" alt=""> **Unclear responsibility** | A step with no role, or a role with no department |
+| <img src="docs/icons/file-pen.svg" width="16" height="16" align="absmiddle" alt=""> **Poor documentation** | Missing descriptions, tools, inputs or outputs |
 
-### ⚖️ From AS-IS to TO-BE
+### <img src="docs/icons/git-compare.svg" width="20" height="20" align="absmiddle" alt=""> From AS-IS to TO-BE
 
 **Generate TO-BE** (in [`optimizer.js`](server/src/services/optimizer.js)) copies a process and applies improvements: it merges duplicate steps, automates repeatable manual tasks, shortens bottlenecks and flags missing owners. Your original is never changed. Example from the built-in demo:
 
 | | AS-IS | TO-BE | Change |
 |---|---:|---:|---:|
-| Manual tasks | 9 | 4 | ⬇ 56% |
-| Estimated time | 222 min | 140 min | ⬇ 37% |
-| Health score | 49 | 68 | ⬆ +19 |
+| Manual tasks | 9 | 4 | -56% |
+| Estimated time | 222 min | 140 min | -37% |
+| Health score | 49 | 68 | +19 |
 
-## 🛠️ Built with
+## <img src="docs/icons/wrench.svg" width="24" height="24" align="absmiddle" alt=""> Built with
 
 | Layer | Technology |
 |---|---|
@@ -118,7 +119,7 @@ FlowLens uses **simple, transparent rules**, not AI. You can read them in [`serv
 | Database | MongoDB · Mongoose |
 | API | REST |
 
-## 📂 Project structure
+## <img src="docs/icons/folder-tree.svg" width="24" height="24" align="absmiddle" alt=""> Project structure
 
 ```text
 FlowLens/
@@ -139,7 +140,7 @@ FlowLens/
 └── flowlens-images/        Screenshots used in this README
 ```
 
-## 🎨 The logo
+## <img src="docs/icons/palette.svg" width="24" height="24" align="absmiddle" alt=""> The logo
 
 The mark is an **F drawn as a process**: one path leaves the stem and branches into two nodes. It reads as a letter and as a tiny flowchart.
 
@@ -161,7 +162,7 @@ All logo files are in [`logo/final`](logo/final), with colours, spacing and do's
 
 # Part 2 · Setup
 
-## ✅ Requirements
+## <img src="docs/icons/circle-check.svg" width="24" height="24" align="absmiddle" alt=""> Requirements
 
 | You need | Notes |
 |---|---|
@@ -170,7 +171,7 @@ All logo files are in [`logo/final`](logo/final), with colours, spacing and do's
 | **MongoDB** *(optional)* | A local install or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster. If you have neither, FlowLens uses a temporary in-memory database so you can still try it. |
 | **Git** | To clone the repository. |
 
-## 🚀 Quick start
+## <img src="docs/icons/rocket.svg" width="24" height="24" align="absmiddle" alt=""> Quick start
 
 ```bash
 # 1. Get the code
@@ -196,7 +197,7 @@ Then open **http://localhost:5173**.
 - On first start with no database configured, FlowLens downloads a small MongoDB build and runs it in memory. This can take a minute **once**, and the data is **lost when you stop the server**.
 - Demo data is loaded into an empty database automatically (`SEED_DEMO=true`).
 
-### 🔑 Try the demo account
+### <img src="docs/icons/key-round.svg" width="20" height="20" align="absmiddle" alt=""> Try the demo account
 
 | | |
 |---|---|
@@ -205,7 +206,7 @@ Then open **http://localhost:5173**.
 
 On the login page, **Try the demo** from the landing page, or the **Fill in demo account** button, fills these in for you. You can also **create your own account**: you will answer a few quick questions about your company, then a guided tour walks you through every page. Take the tour again any time with **Take the tour** in the top bar.
 
-## ⚙️ Configuration
+## <img src="docs/icons/settings.svg" width="24" height="24" align="absmiddle" alt=""> Configuration
 
 All settings live in **`server/.env`** (copy it from `server/.env.example`). Never commit this file; it is already git-ignored.
 
@@ -224,7 +225,7 @@ Generate a strong `AUTH_SECRET`:
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
-## 🗄️ Choose your database
+## <img src="docs/icons/database.svg" width="24" height="24" align="absmiddle" alt=""> Choose your database
 
 <details>
 <summary><b>Option A · No setup (in-memory)</b></summary>
@@ -253,7 +254,7 @@ Leave `MONGODB_URI` as it is and keep `USE_MEMORY_FALLBACK=true`. If no MongoDB 
 5. Run `npm run dev`. If the password has special characters, URL-encode them.
 </details>
 
-## 🔐 Optional: Google sign-in
+## <img src="docs/icons/lock.svg" width="24" height="24" align="absmiddle" alt=""> Optional: Google sign-in
 
 The "Sign in with Google" button appears **only when `GOOGLE_CLIENT_ID` is set**. Without it, email and password sign-in works as normal.
 
@@ -268,7 +269,7 @@ The "Sign in with Google" button appears **only when `GOOGLE_CLIENT_ID` is set**
 While the consent screen is in *Testing* mode, only the test users you list can sign in. The server verifies Google's token itself, then signs the user in (creating the account on first use, or linking an existing account with the same email). Google may ask for a card to verify your account; basic sign-in is not billed.
 </details>
 
-## 📜 Useful commands
+## <img src="docs/icons/terminal.svg" width="24" height="24" align="absmiddle" alt=""> Useful commands
 
 | Command | What it does |
 |---|---|
@@ -281,7 +282,7 @@ While the consent screen is in *Testing* mode, only the test users you list can 
 | `npm --prefix client run lint` | Lint the frontend |
 | `python logo/src/build_logo.py` | Rebuild the logo files *(needs `pip install fonttools`)* |
 
-## 🔌 API overview
+## <img src="docs/icons/plug.svg" width="24" height="24" align="absmiddle" alt=""> API overview
 
 All routes are under `/api` and need a signed-in session, except `/api/auth/*`. Each business only sees its own data.
 
@@ -295,7 +296,7 @@ All routes are under `/api` and need a signed-in session, except `/api/auth/*`. 
 | **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `GET /businesses` · `PUT /businesses/:id` |
 | **Dashboard** | `GET /dashboard` |
 
-## 🌍 Deploying
+## <img src="docs/icons/globe.svg" width="24" height="24" align="absmiddle" alt=""> Deploying
 
 FlowLens is a prototype, so treat this as a starting point:
 
@@ -304,7 +305,7 @@ FlowLens is a prototype, so treat this as a starting point:
 3. Run the API with `npm --prefix server start`. The app calls the API at the relative path `/api`, so put both behind one domain with a reverse proxy that forwards `/api` to the API server.
 4. If you use Google sign-in, add your production domain as an **Authorized JavaScript origin**.
 
-## 🩹 Troubleshooting
+## <img src="docs/icons/bandage.svg" width="24" height="24" align="absmiddle" alt=""> Troubleshooting
 
 <details>
 <summary><b>The page is blank or shows "Request failed"</b></summary>
@@ -342,10 +343,11 @@ While the OAuth consent screen is in *Testing* mode, add your Google account und
 The tour starts automatically once per account, after the setup questions. Click **Take the tour** in the top bar (or **Start the tour** in the sidebar) to run it again.
 </details>
 
-## ⚠️ Good to know
+## <img src="docs/icons/triangle-alert.svg" width="24" height="24" align="absmiddle" alt=""> Good to know
 
 - FlowLens is a **prototype**. The analysis is rule-based and the TO-BE generator uses simple heuristics, so treat the results as suggestions, not advice.
 - The logo has **not** been checked against trademark registers. Do that before using it commercially.
+- The icons in this README are from [Lucide](https://lucide.dev) (ISC license).
 - The "FlowLens" lettering is outlined from [Inter](https://rsms.me/inter/) Bold (SIL Open Font License).
 
 <br>
