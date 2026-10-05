@@ -104,9 +104,6 @@ tile = (f'<rect width="512" height="512" rx="112" fill="{INDIGO}"/>'
         f'<g transform="translate({256 - CX * sc:g} {256 - CY * sc - 4:g}) scale({sc:g})">{mark(WHITE, sw=26, nr=23)}</g>')
 save('flowlens-app-icon.svg', svg((0, 0, 512, 512), tile, 'FlowLens app icon'))
 
-# Component data for the React app
-(OUT / 'logo-data.json').write_text(
-    __import__('json').dumps({'viewBox': list(SQ), 'bbox': BBOX, 'wordmarkSize': size, 'wordEndX': end_x}), encoding='utf-8')
 
 
 # ---- React app data (client/src/components/logoData.js), generated from the SVGs above ----
