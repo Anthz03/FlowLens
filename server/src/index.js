@@ -15,7 +15,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api', requireAuth, routes);
 app.use((err, _req, res, _next) => {
   console.error(err);
-  const status = err.name === 'ValidationError' || err.name === 'CastError' ? 400 : 500;
+  const status = err.status || err.name === 'ValidationError' || err.name === 'CastError' ? 400 : 500;
   res.status(status).json({ error: err.message });
 });
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { User, Business } from '../models/index.js';
+import { googleClientId, verifyGoogleCredential, findOrCreateGoogleUser } from '../services/google.js';
 import { hashPassword, verifyPassword, signToken, requireAuth } from '../services/auth.js';
 
 const router = Router();
@@ -46,6 +47,20 @@ router.post('/onboarding', requireAuth, wrap(async (req, res) => {
   }
   await user.save();
   res.json({ user: await user.populate('business', 'name industry size departments') });
+}));
+
+// Tells the client whether Google sign-in is available (and which client id to use).
+router.get('/config', (_req, res) => res.json({ googleClientId: googleClientId() || null }));
+
+router.post('/google', wrap(async (req, res) => {
+  let profile;
+  try { profile = await verifyGoogleCredential(req.body.credential); }
+  catch (e) {
+    if (e.status) return res.status(e.status).json({ error: e.message });
+    return res.status(401).json({ error: 'Google sign-in failed. Please try again.' });
+  }
+  const user = await findOrCreateGoogleUser(profile);
+  res.json(session(await user.populate('business', 'name industry size departments')));
 }));
 
 router.get('/me', requireAuth, wrap(async (req, res) => res.json({ user: await req.user.populate('business', 'name industry size departments') })));

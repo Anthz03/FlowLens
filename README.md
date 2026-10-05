@@ -16,3 +16,13 @@ If MongoDB is unreachable and `USE_MEMORY_FALLBACK=true`, an in-memory MongoDB i
 `/api/processes/:id/steps`, `/api/steps/:id` · `/api/analysis/process/:id` · `/api/dashboard`
 
 Analysis is rule-based (`server/src/services/analyzer.js`); TO-BE generation in `optimizer.js`.
+
+## Google Sign-In (optional, free)
+1. In Google Cloud Console create a project → **APIs & Services → OAuth consent screen** (External; default scopes only).
+2. **Credentials → Create credentials → OAuth client ID → Web application**.
+   Add `http://localhost:5173` (and your real domain later) under *Authorized JavaScript origins*.
+3. Put the Client ID in `server/.env`: `GOOGLE_CLIENT_ID=123456-abc.apps.googleusercontent.com` and restart the API.
+
+The "Sign in with Google" button appears on the login page only when `GOOGLE_CLIENT_ID` is set. The server verifies the
+Google ID token, then signs the user in (creating the account on first use, or linking an existing account with the same email).
+While the consent screen is in *Testing* mode only the test users you list can sign in.

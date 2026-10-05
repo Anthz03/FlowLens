@@ -26,6 +26,7 @@ export function AuthProvider({ children }) {
   const start = ({ token, user: u }) => { setToken(token); setUser(u); return u; };
   const login = async (email, password) => start(await api.login({ email, password }));
   const register = async (form) => start(await api.register(form));
+  const loginWithGoogle = async (credential) => start(await api.google({ credential }));
 
-  return <AuthContext.Provider value={{ user, setUser, ready, login, register, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, ready, login, register, loginWithGoogle, logout }}>{children}</AuthContext.Provider>;
 }

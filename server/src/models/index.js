@@ -7,6 +7,8 @@ export const User = mongoose.model('User', new Schema({
   email: { type: String, required: true, unique: true },
   role: { type: String, default: 'Process Owner' },
   passwordHash: { type: String, select: false },
+  googleId: String,
+  picture: String,
   onboarding: {
     completed: { type: Boolean, default: false },
     skipped: { type: Boolean, default: false },
