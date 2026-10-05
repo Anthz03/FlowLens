@@ -107,9 +107,6 @@ export default function Landing() {
         {/* Hero */}
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 lg:grid-cols-[1.05fr_1fr] lg:pt-20">
           <div className="stagger">
-            <p className="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />Process discovery for small and medium businesses
-            </p>
             <h1 className="mt-5 font-display text-[44px] font-semibold leading-[1.05] tracking-tight text-ink-900 sm:text-6xl">
               See how your business really works.<span className="text-brand-600"> Then make it work better.</span>
             </h1>

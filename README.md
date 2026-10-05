@@ -1,28 +1,362 @@
-# FlowLens – SME Process Discovery & Improvement
+<div align="center">
 
-React + Vite + Tailwind + React Flow + Recharts frontend; Node/Express + MongoDB (Mongoose) backend.
+<a href="#readme">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo/final/flowlens-horizontal-on-dark.svg">
+    <img src="logo/final/flowlens-horizontal.svg" alt="FlowLens" height="64">
+  </picture>
+</a>
 
-## Run
+### Know how your business really works. Then make it work better.
+
+Process discovery and improvement for small and medium businesses.<br>
+Describe a process in plain words, see it as a diagram, find what slows it down, and compare it with a better version.
+
+<br>
+
+![React](https://img.shields.io/badge/React-19-4F46E5?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-4F46E5?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-4F46E5?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express_5-1E1B4B?style=for-the-badge&logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-1E1B4B?style=for-the-badge&logo=mongodb&logoColor=white)
+
+<br>
+
+<img src="flowlens-images/1.png" alt="The FlowLens dashboard: health score, manual tasks, bottlenecks and charts" width="100%">
+
+</div>
+
+<br>
+
+# Part 1 · Introduction
+
+## ✨ What is FlowLens?
+
+Most small businesses run on knowledge nobody wrote down. Orders, approvals and hand-overs follow habits that live in people's heads, spreadsheets and chat threads. That works until someone is away, a customer waits too long, or the business grows.
+
+**FlowLens** is a working prototype of an information system that helps SMEs **discover, document, visualize, analyze and improve** their business processes, without consultants and without process-modelling jargon.
+
+> 💡 **The idea in one line:** type how work happens → get a diagram → get a health score and a list of problems → generate a better version → compare the two.
+
+## 🧭 How it works
+
+| | Step | What you do |
+|---|---|---|
+| **1** | 🗣️ **Describe** | Type what happens in plain words (or fill in a simple form). Say who does each step and which tool they use. |
+| **2** | 🗺️ **See it** | FlowLens draws the process as a diagram you can edit by dragging boxes and arrows. |
+| **3** | 🩺 **Check it** | Get a **Process Health Score** and a clear list of manual tasks, slow steps, repeated steps and steps with nobody in charge. |
+| **4** | 🚀 **Improve it** | Create an improved **TO-BE** version in one click, then compare it with today's **AS-IS** process. |
+
+## 🖼️ Take a look
+
+### 🗣️ Process Discovery: describe it like you would to a new hire
+
+Not documented yet? Type one step per line (start a line with `Sales Rep:` to say who does it, end it with `?` for a decision). FlowLens detects roles, tools and decisions, and you review the result before creating the process.
+
+<img src="flowlens-images/2.png" alt="The Process Discovery wizard" width="100%">
+
+### 🩺 Process Analysis: one number, five reasons
+
+Every process gets a **Health Score out of 100**, broken down into Documentation, Automation, Role Clarity, Process Complexity and Efficiency, plus time per step and written recommendations.
+
+<img src="flowlens-images/3.png" alt="The Process Analysis page with health score, metrics and charts" width="100%">
+
+### 🗺️ Process Map: drag, connect, done
+
+An editable React Flow diagram. Move boxes, add decisions, label branches and edit any step in the side panel. A hand icon means *manual*, a bolt means *automated*, and a red border marks a possible *bottleneck*.
+
+<img src="flowlens-images/4.png" alt="The editable process map with the step editor panel" width="100%">
+
+## 🧩 Features
+
+| Module | What it does |
+|---|---|
+| 🏠 **Dashboard** | Health scores, manual tasks, bottlenecks, where the time goes (by hand vs by system), top issues and suggestions based on your goals |
+| 📁 **Process Repository** | Search and filter all processes; each card shows a small "process strip" of its steps |
+| ➕ **Create / Edit Process** | Name, department, status and steps, each with role, department, tool, inputs, outputs, time and manual/automated |
+| 🧭 **Process Discovery** | Plain-words wizard that turns informal text into structured steps |
+| 🗺️ **Process Map** | Editable flow diagram with decision branches, auto-layout and a side editing panel |
+| 🩺 **Process Analysis** | Rule-based analysis and health score with recommendations |
+| ⚖️ **AS-IS vs TO-BE** | Side-by-side comparison with percentage improvement and a "what changed" list |
+| 📄 **Process Details** | Roles, departments, tools, steps, inputs and outputs in one place |
+| 🔐 **Accounts** | Email + password sign-in (optional Google sign-in), one private workspace per business |
+| 🎓 **Guided onboarding** | A short setup questionnaire, then a 17-step interactive tour of every page |
+
+## 🔍 How the analysis works
+
+FlowLens uses **simple, transparent rules**, not AI. You can read them in [`server/src/services/analyzer.js`](server/src/services/analyzer.js).
+
+| It looks for | Rule |
+|---|---|
+| ✋ **Manual tasks** | A task marked as performed manually |
+| 🐢 **Bottlenecks** | A step of 45+ minutes, or 20+ minutes and more than twice the average |
+| 🔁 **Excessive handoffs** | Connected steps owned by different roles (flagged when there are many) |
+| 👯 **Duplicate steps** | Two steps with very similar names |
+| 🙋 **Unclear responsibility** | A step with no role, or a role with no department |
+| 📝 **Poor documentation** | Missing descriptions, tools, inputs or outputs |
+
+### ⚖️ From AS-IS to TO-BE
+
+**Generate TO-BE** (in [`optimizer.js`](server/src/services/optimizer.js)) copies a process and applies improvements: it merges duplicate steps, automates repeatable manual tasks, shortens bottlenecks and flags missing owners. Your original is never changed. Example from the built-in demo:
+
+| | AS-IS | TO-BE | Change |
+|---|---:|---:|---:|
+| Manual tasks | 9 | 4 | ⬇ 56% |
+| Estimated time | 222 min | 140 min | ⬇ 37% |
+| Health score | 49 | 68 | ⬆ +19 |
+
+## 🛠️ Built with
+
+| Layer | Technology |
+|---|---|
+| Frontend | React · Vite · JavaScript |
+| Styling | Tailwind CSS 4 · Geist and Outfit fonts |
+| Diagram | React Flow (`@xyflow/react`) |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Backend | Node.js · Express 5 |
+| Database | MongoDB · Mongoose |
+| API | REST |
+
+## 📂 Project structure
+
+```text
+FlowLens/
+├── client/                 React + Vite frontend
+│   ├── public/             Favicons and web manifest
+│   └── src/
+│       ├── components/     Layout, UI kit, Logo, ProcessStrip, FlowNodes, Tour…
+│       ├── pages/          Landing, Login, Onboarding, Dashboard, Repository,
+│       │                   ProcessForm, Discovery, ProcessMap, Analysis, Compare…
+│       └── lib/            API client, auth context, constants
+├── server/                 Node + Express backend
+│   └── src/
+│       ├── models/         User, Business, Process, ProcessStep, ProcessAnalysis
+│       ├── routes/         REST API + auth
+│       ├── services/       analyzer, optimizer, auth, Google sign-in
+│       └── seed.js         Demo data
+├── logo/                   Logo files, usage guidelines and the build script
+└── flowlens-images/        Screenshots used in this README
 ```
-npm run install:all     # installs root, server and client dependencies
-npm run dev             # API on :5000, web app on :5173
+
+## 🎨 The logo
+
+The mark is an **F drawn as a process**: one path leaves the stem and branches into two nodes. It reads as a letter and as a tiny flowchart.
+
+<div align="center">
+
+<img src="logo/final/flowlens-symbol.svg" alt="FlowLens symbol" height="96">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="logo/final/flowlens-app-icon.svg" alt="FlowLens app icon" height="96">&nbsp;&nbsp;&nbsp;&nbsp;
+<img src="logo/final/flowlens-stacked.svg" alt="FlowLens stacked logo" height="96">
+
+</div>
+
+All logo files are in [`logo/final`](logo/final), with colours, spacing and do's and don'ts in the [logo guidelines](logo/FlowLens-logo-guidelines.md).
+
+<br>
+
+---
+
+<br>
+
+# Part 2 · Setup
+
+## ✅ Requirements
+
+| You need | Notes |
+|---|---|
+| **Node.js** `20.19+` or `22.12+` | Required by Vite 8. Check with `node -v`. |
+| **npm** | Comes with Node.js. |
+| **MongoDB** *(optional)* | A local install or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster. If you have neither, FlowLens uses a temporary in-memory database so you can still try it. |
+| **Git** | To clone the repository. |
+
+## 🚀 Quick start
+
+```bash
+# 1. Get the code
+git clone <your-repository-url> FlowLens
+cd FlowLens
+
+# 2. Install everything (root, server and client)
+npm run install:all
+
+# 3. Create your environment file
+#    macOS / Linux / Git Bash:
+cp server/.env.example server/.env
+#    Windows PowerShell:
+#    Copy-Item server/.env.example server/.env
+
+# 4. Start the API and the web app together
+npm run dev
 ```
-Configure `server/.env` (see `.env.example`): `MONGODB_URI` for local MongoDB or Atlas.
-If MongoDB is unreachable and `USE_MEMORY_FALLBACK=true`, an in-memory MongoDB is used (data resets on restart).
-`SEED_DEMO=true` loads demo processes into an empty database.
 
-## API
-`/api/{users,businesses}` CRUD · `/api/processes` CRUD (+ `POST /:id/duplicate {optimize}`) ·
-`/api/processes/:id/steps`, `/api/steps/:id` · `/api/analysis/process/:id` · `/api/dashboard`
+Then open **http://localhost:5173**.
 
-Analysis is rule-based (`server/src/services/analyzer.js`); TO-BE generation in `optimizer.js`.
+- The web app runs on port **5173** and the API on port **5000**. The web app forwards `/api` requests to the API for you.
+- On first start with no database configured, FlowLens downloads a small MongoDB build and runs it in memory. This can take a minute **once**, and the data is **lost when you stop the server**.
+- Demo data is loaded into an empty database automatically (`SEED_DEMO=true`).
 
-## Google Sign-In (optional, free)
-1. In Google Cloud Console create a project → **APIs & Services → OAuth consent screen** (External; default scopes only).
-2. **Credentials → Create credentials → OAuth client ID → Web application**.
-   Add `http://localhost:5173` (and your real domain later) under *Authorized JavaScript origins*.
-3. Put the Client ID in `server/.env`: `GOOGLE_CLIENT_ID=123456-abc.apps.googleusercontent.com` and restart the API.
+### 🔑 Try the demo account
 
-The "Sign in with Google" button appears on the login page only when `GOOGLE_CLIENT_ID` is set. The server verifies the
-Google ID token, then signs the user in (creating the account on first use, or linking an existing account with the same email).
-While the consent screen is in *Testing* mode only the test users you list can sign in.
+| | |
+|---|---|
+| **Email** | `demo@flowlens.app` |
+| **Password** | `demo1234` |
+
+On the login page, **Try the demo** from the landing page, or the **Fill in demo account** button, fills these in for you. You can also **create your own account**: you will answer a few quick questions about your company, then a guided tour walks you through every page. Take the tour again any time with **Take the tour** in the top bar.
+
+## ⚙️ Configuration
+
+All settings live in **`server/.env`** (copy it from `server/.env.example`). Never commit this file; it is already git-ignored.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `PORT` | `5000` | Port for the API |
+| `MONGODB_URI` | `mongodb://127.0.0.1:27017/flowlens` | Your MongoDB connection string (local or Atlas) |
+| `USE_MEMORY_FALLBACK` | `true` | If `MONGODB_URI` cannot be reached, use a temporary in-memory database. Set to `false` in production so a bad connection fails loudly. |
+| `SEED_DEMO` | `true` | Load demo data into an **empty** database |
+| `AUTH_SECRET` | *(placeholder)* | Secret used to sign login sessions. **Change it to a long random string** (see below). |
+| `GOOGLE_CLIENT_ID` | *(empty)* | Optional. Turns on "Sign in with Google" |
+
+Generate a strong `AUTH_SECRET`:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+```
+
+## 🗄️ Choose your database
+
+<details>
+<summary><b>Option A · No setup (in-memory)</b></summary>
+
+Leave `MONGODB_URI` as it is and keep `USE_MEMORY_FALLBACK=true`. If no MongoDB is running locally, FlowLens starts a temporary one. Perfect for a quick look. Data disappears when the server stops.
+</details>
+
+<details>
+<summary><b>Option B · Local MongoDB</b></summary>
+
+1. Install [MongoDB Community Server](https://www.mongodb.com/try/download/community) and start it.
+2. Keep `MONGODB_URI=mongodb://127.0.0.1:27017/flowlens` in `server/.env`.
+3. Run `npm run dev`. The demo data is created on first start.
+</details>
+
+<details>
+<summary><b>Option C · MongoDB Atlas (free cloud database)</b></summary>
+
+1. Create a free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas).
+2. **Database Access** → add a database user with a password.
+3. **Network Access** → allow your IP address.
+4. **Connect → Drivers** → copy the connection string and put it in `server/.env`:
+   ```env
+   MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/flowlens
+   ```
+5. Run `npm run dev`. If the password has special characters, URL-encode them.
+</details>
+
+## 🔐 Optional: Google sign-in
+
+The "Sign in with Google" button appears **only when `GOOGLE_CLIENT_ID` is set**. Without it, email and password sign-in works as normal.
+
+<details>
+<summary><b>How to set it up (free)</b></summary>
+
+1. In the [Google Cloud Console](https://console.cloud.google.com), create a project, then open **APIs & Services → OAuth consent screen** (choose *External*, default scopes only).
+2. Go to **Credentials → Create credentials → OAuth client ID → Web application**.
+3. Under **Authorized JavaScript origins**, add `http://localhost:5173` (and your real domain when you deploy).
+4. Copy the **Client ID** into `server/.env` as `GOOGLE_CLIENT_ID=…apps.googleusercontent.com`, then restart the API.
+
+While the consent screen is in *Testing* mode, only the test users you list can sign in. The server verifies Google's token itself, then signs the user in (creating the account on first use, or linking an existing account with the same email). Google may ask for a card to verify your account; basic sign-in is not billed.
+</details>
+
+## 📜 Useful commands
+
+| Command | What it does |
+|---|---|
+| `npm run install:all` | Install dependencies for root, server and client |
+| `npm run dev` | Start API (`:5000`) and web app (`:5173`) together |
+| `npm run seed` | Load demo data into an empty database |
+| `npm --prefix server start` | Start the API only (no auto-reload) |
+| `npm --prefix client run dev` | Start the web app only |
+| `npm --prefix client run build` | Create a production build in `client/dist` |
+| `npm --prefix client run lint` | Lint the frontend |
+| `python logo/src/build_logo.py` | Rebuild the logo files *(needs `pip install fonttools`)* |
+
+## 🔌 API overview
+
+All routes are under `/api` and need a signed-in session, except `/api/auth/*`. Each business only sees its own data.
+
+| Area | Endpoints |
+|---|---|
+| **Auth** | `POST /auth/register` · `POST /auth/login` · `POST /auth/google` · `GET /auth/me` · `GET /auth/config` · `POST /auth/onboarding` |
+| **Processes** | `GET /processes` · `GET /processes/:id` · `POST /processes` · `PUT /processes/:id` · `DELETE /processes/:id` |
+| **TO-BE** | `POST /processes/:id/duplicate` with `{ "optimize": true }` |
+| **Steps** | `GET/POST /processes/:id/steps` · `GET/PUT/DELETE /steps/:id` |
+| **Analysis** | `GET/POST /analysis/process/:id` · `GET /analysis` · `PUT/DELETE /analysis/:id` |
+| **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `GET /businesses` · `PUT /businesses/:id` |
+| **Dashboard** | `GET /dashboard` |
+
+## 🌍 Deploying
+
+FlowLens is a prototype, so treat this as a starting point:
+
+1. Set a strong `AUTH_SECRET`, a real `MONGODB_URI` (for example Atlas), `USE_MEMORY_FALLBACK=false`, and consider `SEED_DEMO=false`.
+2. Build the frontend with `npm --prefix client run build` and serve `client/dist` from any static host.
+3. Run the API with `npm --prefix server start`. The app calls the API at the relative path `/api`, so put both behind one domain with a reverse proxy that forwards `/api` to the API server.
+4. If you use Google sign-in, add your production domain as an **Authorized JavaScript origin**.
+
+## 🩹 Troubleshooting
+
+<details>
+<summary><b>The page is blank or shows "Request failed"</b></summary>
+
+Make sure the API is running (`http://localhost:5000/api/health` should return `{"ok":true}`). `npm run dev` starts both servers; if you started only the web app, start the API too.
+</details>
+
+<details>
+<summary><b>"Port 5000 / 5173 is already in use"</b></summary>
+
+Another copy of FlowLens (or another app) is using the port. Stop it, or change `PORT` in `server/.env`. If you change the API port, update the proxy target in `client/vite.config.js`.
+</details>
+
+<details>
+<summary><b>The server cannot connect to MongoDB</b></summary>
+
+Check `MONGODB_URI`, that your database is running, and (for Atlas) that your IP is allowed under **Network Access**. With `USE_MEMORY_FALLBACK=true` the server falls back to a temporary in-memory database instead of stopping, so look for the message "Using in-memory MongoDB" in the terminal.
+</details>
+
+<details>
+<summary><b>My data disappeared after a restart</b></summary>
+
+You are using the in-memory database. Point `MONGODB_URI` at a local MongoDB or Atlas to keep your data.
+</details>
+
+<details>
+<summary><b>Google sign-in says "access blocked"</b></summary>
+
+While the OAuth consent screen is in *Testing* mode, add your Google account under **Audience → Test users**. Also check that `http://localhost:5173` is listed as an Authorized JavaScript origin, and wait a few minutes after creating a new Client ID.
+</details>
+
+<details>
+<summary><b>I do not see the guided tour</b></summary>
+
+The tour starts automatically once per account, after the setup questions. Click **Take the tour** in the top bar (or **Start the tour** in the sidebar) to run it again.
+</details>
+
+## ⚠️ Good to know
+
+- FlowLens is a **prototype**. The analysis is rule-based and the TO-BE generator uses simple heuristics, so treat the results as suggestions, not advice.
+- The logo has **not** been checked against trademark registers. Do that before using it commercially.
+- The "FlowLens" lettering is outlined from [Inter](https://rsms.me/inter/) Bold (SIL Open Font License).
+
+<br>
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="logo/final/flowlens-symbol-white.svg">
+  <img src="logo/final/flowlens-symbol.svg" alt="" height="40">
+</picture>
+
+**Document it. See it. Improve it.**
+
+</div>
