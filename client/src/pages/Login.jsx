@@ -107,9 +107,9 @@ export default function Login() {
               <Field label="Business name"><TextInput required value={form.businessName} onChange={set('businessName')} /></Field>
             </>}
             <Field label="Email"><TextInput type="email" required value={form.email} onChange={set('email')} autoComplete="email" /></Field>
-            <Field label="Password" hint={mode === 'register' ? 'At least 6 characters' : undefined}>
+            <Field label="Password" hint={mode === 'register' ? 'At least 8 characters, with a letter and a number' : undefined}>
               <div className="relative">
-                <TextInput type={show ? 'text' : 'password'} required minLength={mode === 'register' ? 6 : undefined} value={form.password} onChange={set('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
+                <TextInput type={show ? 'text' : 'password'} required minLength={mode === 'register' ? 8 : undefined} value={form.password} onChange={set('password')} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />
                 <button type="button" onClick={() => setShow(!show)} aria-label={show ? 'Hide password' : 'Show password'} className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600"><Eye size={16} /></button>
               </div>
             </Field>

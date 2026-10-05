@@ -216,7 +216,7 @@ All settings live in **`server/.env`** (copy it from `server/.env.example`). Nev
 | `MONGODB_URI` | `mongodb://127.0.0.1:27017/flowlens` | Your MongoDB connection string (local or Atlas) |
 | `USE_MEMORY_FALLBACK` | `true` | If `MONGODB_URI` cannot be reached, use a temporary in-memory database. Set to `false` in production so a bad connection fails loudly. |
 | `SEED_DEMO` | `true` | Load demo data into an **empty** database |
-| `AUTH_SECRET` | *(placeholder)* | Secret used to sign login sessions. **Change it to a long random string** (see below). |
+| `AUTH_SECRET` | *(placeholder)* | Secret used to sign login sessions. **Change it to a long random string** (see below). Required in production. |
 | `GOOGLE_CLIENT_ID` | *(empty)* | Optional. Turns on "Sign in with Google" |
 
 Generate a strong `AUTH_SECRET`:
@@ -224,6 +224,49 @@ Generate a strong `AUTH_SECRET`:
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
+
+## <img src="docs/icons/shield-check.svg" width="24" height="24" align="absmiddle" alt=""> Security
+
+The API is hardened by default. Everything below works out of the box, and the settings are in `server/.env`.
+
+| Area | What FlowLens does |
+|---|---|
+| **Authentication** | Passwords hashed with scrypt (non-blocking, upgradeable cost). Signed session tokens that expire after 12 hours, refresh while you are active, and can be revoked. Optional Google sign-in with server-side token verification. |
+| **Password rules** | 8 to 128 characters with a letter and a number, and a block-list of common passwords. Changing a password signs out every other device. |
+| **Brute-force protection** | An account locks for 15 minutes after 5 wrong passwords. Failed sign-ins are also rate limited per IP, and unknown emails take the same time and give the same message as wrong passwords. |
+| **Rate limiting** | Per IP on every request, per user when signed in, stricter on sign-in, sign-up and the heavier analysis endpoints. Rejected requests get `429` with `Retry-After`. |
+| **Authorization** | Three roles: **owner**, **admin**, **member**. Members can create and edit processes. Deleting processes, managing the team and changing company details need admin or owner. Only owners change roles, and a business always keeps at least one owner. |
+| **Tenant isolation** | Every record is checked against the signed-in user's business, including steps and analyses. Other businesses get `404`. |
+| **Input validation** | Every request body is checked with a strict schema (types, lengths, allowed values, size limits). Unknown fields are dropped, so clients cannot set owners, businesses or move steps between processes. |
+| **Injection protection** | Keys starting with `$` or containing `.` are stripped, query parameters are validated, and ids are checked before reaching the database. |
+| **HTTP hardening** | Security headers (Helmet), a CORS allow-list, `no-store` caching on API responses, a 256 KB body limit and no `X-Powered-By`. |
+| **Safe errors** | Clients get short generic messages and a request id. Details stay in the server log. |
+| **Audit log** | Sign-ins, lockouts, password changes, role changes and deletions are logged and kept for 90 days. Owners and admins read them at `GET /api/audit`. |
+| **Safe defaults** | New team members get a random one-time password, never a fixed one. In production the server refuses to start with a weak `AUTH_SECRET`. |
+
+Run the automated security tests (they use a temporary in-memory database):
+
+```bash
+npm --prefix server test
+```
+
+<details>
+<summary><b>Security settings</b></summary>
+
+| Variable | Default | What it does |
+|---|---|---|
+| `NODE_ENV` | `development` | Set to `production` to enforce a strong `AUTH_SECRET` |
+| `TOKEN_TTL_HOURS` | `12` | How long a session lasts without activity |
+| `CORS_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Browser origins allowed to call the API |
+| `TRUST_PROXY` | `false` | Set to `1` (or your proxy setup) behind a reverse proxy, so client IPs are correct |
+| `MAX_FAILED_LOGINS` / `LOCKOUT_MINUTES` | `5` / `15` | Account lockout |
+| `RATE_LIMIT_AUTH_MAX` | `10` | Failed sign-ins per IP per 15 minutes |
+| `RATE_LIMIT_REGISTER_MAX` | `5` | New accounts per IP per hour |
+| `RATE_LIMIT_IP_MAX` / `RATE_LIMIT_USER_MAX` | `1000` / `600` | Requests per 15 minutes |
+</details>
+
+> [!IMPORTANT]
+> What is **not** included yet: email verification, two-factor sign-in and password-reset by email. Rate limits are kept in server memory, so use a shared store (such as Redis) if you run several API instances. Serve the site over HTTPS and let your host or reverse proxy add security headers (such as a Content-Security-Policy) to the frontend.
 
 ## <img src="docs/icons/database.svg" width="24" height="24" align="absmiddle" alt=""> Choose your database
 
@@ -277,6 +320,7 @@ While the consent screen is in *Testing* mode, only the test users you list can 
 | `npm run dev` | Start API (`:5000`) and web app (`:5173`) together |
 | `npm run seed` | Load demo data into an empty database |
 | `npm --prefix server start` | Start the API only (no auto-reload) |
+| `npm --prefix server test` | Run the security tests |
 | `npm --prefix client run dev` | Start the web app only |
 | `npm --prefix client run build` | Create a production build in `client/dist` |
 | `npm --prefix client run lint` | Lint the frontend |
@@ -288,12 +332,13 @@ All routes are under `/api` and need a signed-in session, except `/api/auth/*`. 
 
 | Area | Endpoints |
 |---|---|
-| **Auth** | `POST /auth/register` · `POST /auth/login` · `POST /auth/google` · `GET /auth/me` · `GET /auth/config` · `POST /auth/onboarding` |
+| **Auth** | `POST /auth/register` · `POST /auth/login` · `POST /auth/google` · `GET /auth/me` · `GET /auth/config` · `POST /auth/onboarding` · `POST /auth/change-password` · `POST /auth/logout-all` |
 | **Processes** | `GET /processes` · `GET /processes/:id` · `POST /processes` · `PUT /processes/:id` · `DELETE /processes/:id` |
 | **TO-BE** | `POST /processes/:id/duplicate` with `{ "optimize": true }` |
 | **Steps** | `GET/POST /processes/:id/steps` · `GET/PUT/DELETE /steps/:id` |
 | **Analysis** | `GET/POST /analysis/process/:id` · `GET /analysis` · `PUT/DELETE /analysis/:id` |
-| **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `GET /businesses` · `PUT /businesses/:id` |
+| **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `GET /businesses` · `PUT /businesses/:id` (team and company changes need admin or owner) |
+| **Security log** | `GET /audit` (admin or owner) |
 | **Dashboard** | `GET /dashboard` |
 
 ## <img src="docs/icons/globe.svg" width="24" height="24" align="absmiddle" alt=""> Deploying

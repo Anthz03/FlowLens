@@ -15,7 +15,7 @@ export async function ensureDemoLogin() {
   const old = await User.findOne({ email: 'alex@brighttrading.example' }).select('+passwordHash');
   if (old && !old.passwordHash) {
     old.email = 'demo@flowlens.app';
-    old.passwordHash = hashPassword('demo1234');
+    old.passwordHash = await hashPassword('demo1234');
     await old.save();
     console.log('Demo login enabled: demo@flowlens.app / demo1234');
   }
@@ -24,7 +24,7 @@ export async function ensureDemoLogin() {
 export async function seedIfEmpty() {
   if (await Process.countDocuments()) return;
   const business = await Business.create({ name: 'Bright Trading Co.', industry: 'Wholesale & Distribution', size: 'Small', departments: ['Sales', 'Warehouse', 'Finance', 'Purchasing', 'HR', 'IT'] });
-  const user = await User.create({ name: 'Alex Rivera', email: 'demo@flowlens.app', passwordHash: hashPassword('demo1234'), role: 'Operations Manager', business: business._id });
+  const user = await User.create({ name: 'Alex Rivera', email: 'demo@flowlens.app', passwordHash: await hashPassword('demo1234'), permission: 'owner', role: 'Operations Manager', business: business._id });
   const base = { business: business._id, createdBy: user._id };
 
   // 1. Messy order fulfillment (AS-IS)

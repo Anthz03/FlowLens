@@ -5,8 +5,11 @@ import { api } from '../lib/api.js';
 import { PageHeader, Button, Loading, ErrorBox, EmptyState, TextInput, Select, DataTable, Badge, ScoreBadge, ConfirmModal, statusTone } from '../components/ui.jsx';
 import ProcessCard from '../components/ProcessCard.jsx';
 import { fmtTime, STATUSES } from '../lib/constants.js';
+import { useAuth } from '../lib/auth.jsx';
 
 export default function Repository() {
+  const { user } = useAuth();
+  const canDelete = user.permission !== 'member';
   const [list, setList] = useState(null);
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
@@ -54,7 +57,7 @@ export default function Repository() {
       {filtered.length === 0 ? (
         <EmptyState title="No processes found" text="Try different filters, or document a new process." action={<Button to="/processes/new">Create process</Button>} />
       ) : view === 'grid' ? (
-        <div data-tour="repo-list" className="stagger grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={setToDelete} />)}</div>
+        <div data-tour="repo-list" className="stagger grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={canDelete ? setToDelete : undefined} />)}</div>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
           <DataTable rows={filtered} columns={[
@@ -65,7 +68,7 @@ export default function Repository() {
             { header: 'Steps', render: (p) => p.analysis.metrics.steps },
             { header: 'Time', render: (p) => fmtTime(p.analysis.metrics.estimatedTime) },
             { header: 'Health', render: (p) => <ScoreBadge score={p.analysis.score} /> },
-            { header: '', render: (p) => <button onClick={() => setToDelete(p)} className="text-xs text-red-600 hover:underline">Delete</button> },
+            { header: '', render: (p) => canDelete && <button onClick={() => setToDelete(p)} className="text-xs text-red-600 hover:underline">Delete</button> },
           ]} />
         </div>
       )}

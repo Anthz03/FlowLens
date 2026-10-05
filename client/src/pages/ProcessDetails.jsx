@@ -5,12 +5,14 @@ import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Loading, ErrorBox, Badge, DataTable, ScoreRing, ConfirmModal, statusTone } from '../components/ui.jsx';
 import ProcessStrip, { StripLegend } from '../components/ProcessStrip.jsx';
 import { fmtTime } from '../lib/constants.js';
+import { useAuth } from '../lib/auth.jsx';
 
 const Chips = ({ items, empty = 'None' }) => (items.length ? <div className="flex flex-wrap gap-1.5">{items.map((i) => <Badge key={i}>{i}</Badge>)}</div> : <span className="text-sm text-slate-400">{empty}</span>);
 
 export default function ProcessDetails() {
   const { id } = useParams();
   const nav = useNavigate();
+  const { user } = useAuth();
   const [p, setP] = useState(null);
   const [a, setA] = useState(null);
   const [error, setError] = useState('');
@@ -32,7 +34,7 @@ export default function ProcessDetails() {
         <Button variant="secondary" to={`/processes/${id}/map`}><Workflow size={16} />Map</Button>
         <Button variant="secondary" to={`/processes/${id}/analysis`}><Activity size={16} />Analysis</Button>
         {p.version !== 'to-be' && <Button variant="secondary" onClick={toBe}><Copy size={16} />Duplicate as TO-BE</Button>}
-        <Button variant="ghost" onClick={() => setConfirm(true)} aria-label="Delete process"><Trash2 size={16} className="text-red-500" /></Button>
+        {user.permission !== 'member' && <Button variant="ghost" onClick={() => setConfirm(true)} aria-label="Delete process"><Trash2 size={16} className="text-red-500" /></Button>}
       </PageHeader>
       <ErrorBox error={error} />
 

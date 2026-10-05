@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => { setToken(null); setUser(null); }, []);
 
   useEffect(() => {
-    if (getToken()) api.me().then((r) => setUser(r.user)).catch(() => setToken(null)).finally(() => setReady(true));
+    if (getToken()) api.me().then((r) => { setUser(r.user); if (r.token) setToken(r.token); }).catch(() => setToken(null)).finally(() => setReady(true));
     window.addEventListener('flowlens:unauthorized', logout);
     return () => window.removeEventListener('flowlens:unauthorized', logout);
   }, [logout]);

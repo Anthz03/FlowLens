@@ -2,11 +2,17 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 const opts = { timestamps: true };
 
-export const User = mongoose.model('User', new Schema({
+const userSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  role: { type: String, default: 'Process Owner' },
+  role: { type: String, default: 'Process Owner' }, // job title shown in the UI
+  // What the user is allowed to do: owner > admin > member
+  permission: { type: String, enum: ['owner', 'admin', 'member'], default: 'member' },
   passwordHash: { type: String, select: false },
+  tokenVersion: { type: Number, default: 0 },        // bump to revoke every session of this user
+  failedLogins: { type: Number, default: 0, select: false },
+  lockUntil: { type: Date, select: false },
+  passwordChangedAt: Date,
   googleId: String,
   picture: String,
   onboarding: {
@@ -20,7 +26,22 @@ export const User = mongoose.model('User', new Schema({
     completedAt: Date,
   },
   business: { type: Schema.Types.ObjectId, ref: 'Business' },
-}, opts));
+}, {
+  ...opts,
+  toJSON: { transform: (_doc, ret) => { delete ret.passwordHash; delete ret.tokenVersion; delete ret.failedLogins; delete ret.lockUntil; delete ret.googleId; delete ret.__v; return ret; } },
+});
+export const User = mongoose.model('User', userSchema);
+
+// Security-relevant events, kept for 90 days.
+export const AuditLog = mongoose.model('AuditLog', new Schema({
+  business: { type: Schema.Types.ObjectId, ref: 'Business', index: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  action: { type: String, required: true },
+  ip: String,
+  userAgent: String,
+  meta: Schema.Types.Mixed,
+  createdAt: { type: Date, default: Date.now, expires: 60 * 60 * 24 * 90 },
+}));
 
 export const Business = mongoose.model('Business', new Schema({
   name: { type: String, required: true },
