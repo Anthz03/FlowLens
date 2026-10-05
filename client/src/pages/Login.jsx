@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { Workflow, Eye, Compass, Activity, GitCompare } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
 import { api } from '../lib/api.js';
@@ -58,8 +58,9 @@ function GoogleButton({ mode, onCredential, onError }) {
 
 export default function Login() {
   const { user, login, register, loginWithGoogle } = useAuth();
-  const [mode, setMode] = useState('login');
-  const [form, setForm] = useState({ name: '', businessName: '', email: '', password: '' });
+  const [params] = useSearchParams();
+  const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login');
+  const [form, setForm] = useState({ name: '', businessName: '', email: params.get('demo') ? 'demo@flowlens.app' : '', password: params.get('demo') ? 'demo1234' : '' });
   const [show, setShow] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);

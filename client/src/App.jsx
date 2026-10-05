@@ -13,12 +13,13 @@ import Analysis from './pages/Analysis.jsx';
 import Compare from './pages/Compare.jsx';
 import ProcessDetails from './pages/ProcessDetails.jsx';
 import NotFound from './pages/NotFound.jsx';
+import Landing from './pages/Landing.jsx';
 
 function RequireAuth() {
   const { user, ready } = useAuth();
   const location = useLocation();
   if (!ready) return <Loading />;
-  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  if (!user) return location.pathname === '/' ? <Landing /> : <Navigate to="/login" replace state={{ from: location }} />;
   // New accounts answer the setup questions first; once done, /welcome is no longer needed.
   const done = !!user.onboarding?.completed;
   if (!done && location.pathname !== '/welcome') return <Navigate to="/welcome" replace />;
