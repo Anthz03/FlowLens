@@ -1,0 +1,30 @@
+# Render blueprint for the FlowLens API (the website is deployed separately, e.g. on Vercel).
+# Render dashboard: New > Blueprint > pick this repository. You will be asked for the values marked "sync: false".
+services:
+  - type: web
+    name: flowlens-api
+    runtime: node
+    rootDir: server
+    plan: free                      # free instances sleep when idle; use a paid plan for always-on
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: AUTH_SECRET
+        generateValue: true         # Render creates a strong random value for you
+      - key: MONGODB_URI
+        sync: false                 # your MongoDB Atlas connection string
+      - key: CORS_ORIGINS
+        sync: false                 # your website address, e.g. https://flowlens.vercel.app
+      - key: GOOGLE_CLIENT_ID
+        sync: false                 # optional
+      - key: USE_MEMORY_FALLBACK
+        value: "false"
+      - key: SEED_DEMO
+        value: "false"
+      - key: TRUST_PROXY
+        value: "1"

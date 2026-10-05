@@ -155,3 +155,15 @@ test('admin password reset: new one-time password, sessions revoked, lockout cle
   assert.equal((await call('POST', '/auth/login', { body: { email: 'rita@set.test', password: fresh } })).status, 200, 'account is unlocked and the new password works');
   assert.ok((await call('GET', '/audit', { token: A.token })).json.some((e) => e.action === 'password_reset_by_admin'));
 });
+
+test('public config: demo shortcuts are off unless demo mode is on; origins are tidied', async () => {
+  const r = await call('GET', '/auth/config');
+  assert.equal(r.status, 200);
+  assert.equal(r.json.demoEnabled, false, 'no demo mode in this environment');
+  assert.ok('googleClientId' in r.json);
+  const { loadConfig, productionWarnings } = await import('../src/config.js');
+  const cfg = loadConfig({ NODE_ENV: 'production', AUTH_SECRET: 'z'.repeat(40), CORS_ORIGINS: 'https://a.example/, https://b.example' });
+  assert.deepEqual(cfg.corsOrigins, ['https://a.example', 'https://b.example'], 'trailing slashes removed so origins match exactly');
+  assert.equal(productionWarnings(cfg, { SEED_DEMO: 'true', USE_MEMORY_FALLBACK: 'true' }).length, 3, 'demo, memory db and missing TRUST_PROXY are flagged');
+  assert.throws(() => loadConfig({ NODE_ENV: 'production', AUTH_SECRET: 'change-this-to-a-long-random-string' }), /AUTH_SECRET/, 'production refuses a placeholder secret');
+});

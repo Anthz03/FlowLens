@@ -87,7 +87,7 @@ router.post('/onboarding', requireAuth, validate(onboardingSchema), wrap(async (
 }));
 
 // Tells the client whether Google sign-in is available (and which client id to use).
-router.get('/config', (_req, res) => res.json({ googleClientId: googleClientId() || null }));
+router.get('/config', (_req, res) => res.json({ googleClientId: googleClientId() || null, demoEnabled: process.env.SEED_DEMO === 'true' }));
 
 router.post('/google', validate(googleSchema), wrap(async (req, res) => {
   let profile;

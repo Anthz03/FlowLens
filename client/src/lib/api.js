@@ -2,9 +2,12 @@ const TOKEN_KEY = 'flowlens_token';
 export const getToken = () => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } };
 export const setToken = (t) => { try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch { /* storage unavailable */ } };
 
+// In development the Vite proxy forwards /api. On a separate host, set VITE_API_URL to the backend address at build time.
+const API = `${(import.meta.env.VITE_API_URL || '').replace(/\/+$/, '')}/api`;
+
 async function request(path, options = {}) {
   const token = getToken();
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${API}${path}`, {
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     ...options,
     body: options.body ? JSON.stringify(options.body) : undefined,
@@ -18,7 +21,7 @@ async function request(path, options = {}) {
 // Download a file the API generates (needs the Authorization header, so a plain link will not do).
 async function download(path, fallbackName) {
   const token = getToken();
-  const res = await fetch(`/api${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  const res = await fetch(`${API}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
   if (res.status === 401) window.dispatchEvent(new Event('flowlens:unauthorized'));
   if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.error || `Download failed (${res.status})`); }
   const name = /filename="([^"]+)"/.exec(res.headers.get('Content-Disposition') || '')?.[1] || fallbackName;

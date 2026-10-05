@@ -26,7 +26,7 @@ export function loadConfig(env = process.env) {
     weakSecret,
     tokenTtlHours: num(env.TOKEN_TTL_HOURS, 12),
     // Browser origins allowed to call the API cross-origin. Same-origin requests and server-to-server calls are unaffected.
-    corsOrigins: (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173').split(',').map((s) => s.trim()).filter(Boolean),
+    corsOrigins: (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173').split(',').map((s) => s.trim().replace(/\/+$/, '')).filter(Boolean),
     trustProxy: parseTrustProxy(env.TRUST_PROXY), // set when running behind a reverse proxy so client IPs are correct
     bodyLimit: env.BODY_LIMIT || '256kb',
     maxFailedLogins: num(env.MAX_FAILED_LOGINS, 5),
@@ -42,6 +42,17 @@ export function loadConfig(env = process.env) {
       heavyWindowMs: mins(1),
     },
   };
+}
+
+// Things that work in development but are unsafe on a public server. Returned as messages so the server can log them at startup.
+export function productionWarnings(cfg, env = process.env) {
+  if (!cfg.isProd) return [];
+  const out = [];
+  if (env.SEED_DEMO === 'true') out.push('SEED_DEMO=true creates a public demo account (demo@flowlens.app / demo1234). Set SEED_DEMO=false.');
+  if (env.USE_MEMORY_FALLBACK === 'true') out.push('USE_MEMORY_FALLBACK=true can silently replace your database with a temporary one. Set it to false.');
+  if (cfg.corsOrigins.some((o) => /localhost|127\.0\.0\.1/.test(o))) out.push('CORS_ORIGINS still contains localhost. Set it to your website address.');
+  if (!env.TRUST_PROXY) out.push('TRUST_PROXY is not set. Behind a host such as Render set TRUST_PROXY=1 so rate limiting sees each visitor.');
+  return out;
 }
 
 let cached;

@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { api } from '../lib/api.js';
 import { ArrowRight, Check, Compass, Workflow, Activity, GitCompare, Hand, Timer, Shuffle, UserX, Lock, MousePointerClick } from 'lucide-react';
 import Logo from '../components/Logo.jsx';
 import { ScoreRing, ScoreBar, Button } from '../components/ui.jsx';
@@ -84,6 +86,8 @@ function SectionTitle({ eyebrow, title, children, className = '' }) {
 const panel = 'rounded-3xl border border-slate-200/70 bg-white p-7 shadow-card';
 
 export default function Landing() {
+  const [demoEnabled, setDemoEnabled] = useState(false); // hidden until the server says the demo account exists
+  useEffect(() => { api.authConfig().then((c) => setDemoEnabled(!!c.demoEnabled)).catch(() => {}); }, []);
   return (
     <div className="min-h-screen overflow-x-clip">
       <a href="#main" className="sr-only z-[200] rounded-lg bg-white px-4 py-2 text-sm font-medium text-brand-700 shadow-lift focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
@@ -115,10 +119,10 @@ export default function Landing() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button to={SIGN_UP} className="!px-6 !py-3 !text-[15px]">Create a free account<ArrowRight size={16} /></Button>
-              <Button to={DEMO} variant="secondary" className="!px-6 !py-3 !text-[15px]"><MousePointerClick size={16} />Try the demo</Button>
+              {demoEnabled && <Button to={DEMO} variant="secondary" className="!px-6 !py-3 !text-[15px]"><MousePointerClick size={16} />Try the demo</Button>}
             </div>
             <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500">
-              {['Start by typing, no forms to learn', 'Demo account with sample data', 'Each business sees only its own data'].map((t) => (
+              {['Start by typing, no forms to learn', ...(demoEnabled ? ['Demo account with sample data'] : ['Guided tour on your first visit']), 'Each business sees only its own data'].map((t) => (
                 <li key={t} className="flex items-center gap-1.5"><Check size={15} className="text-emerald-500" />{t}</li>
               ))}
             </ul>
@@ -167,7 +171,7 @@ export default function Landing() {
         <section id="features" className="scroll-mt-20 border-y border-slate-200/60 bg-white/60">
           <div className="mx-auto max-w-6xl px-5 py-24">
             <SectionTitle eyebrow="What you get" title="Everything you need to understand and improve a process.">
-              Examples below use a sample order process, as it appears in the demo.
+              Examples below use a sample order process.{demoEnabled ? ' You can open it in the demo.' : ''}
             </SectionTitle>
             <div className="mt-12 grid gap-6 lg:grid-cols-6">
               <Reveal as="article" delay={0} className={`${panel} lg:col-span-4`}>
@@ -242,7 +246,7 @@ export default function Landing() {
             <p className="relative mx-auto mt-4 max-w-xl text-brand-200/90">Start with the process that causes the most daily frustration. You will see the diagram and your first health score straight away.</p>
             <div className="relative mt-8 flex flex-wrap justify-center gap-3">
               <Button to={SIGN_UP} variant="light" className="!px-6 !py-3 !text-[15px]">Create a free account<ArrowRight size={16} /></Button>
-              <Button to={DEMO} variant="onDark" className="!px-6 !py-3 !text-[15px]">Try the demo first</Button>
+              {demoEnabled && <Button to={DEMO} variant="onDark" className="!px-6 !py-3 !text-[15px]">Try the demo first</Button>}
             </div>
           </Reveal>
         </section>

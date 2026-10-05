@@ -60,7 +60,14 @@ export default function Login() {
   const { user, login, register, loginWithGoogle } = useAuth();
   const [params] = useSearchParams();
   const [mode, setMode] = useState(params.get('mode') === 'register' ? 'register' : 'login');
-  const [form, setForm] = useState({ name: '', businessName: '', email: params.get('demo') ? 'demo@flowlens.app' : '', password: params.get('demo') ? 'demo1234' : '' });
+  const [form, setForm] = useState({ name: '', businessName: '', email: '', password: '' });
+  const [demoEnabled, setDemoEnabled] = useState(false);
+  useEffect(() => {
+    api.authConfig().then((c) => {
+      setDemoEnabled(!!c.demoEnabled);
+      if (c.demoEnabled && params.get('demo')) setForm((f) => ({ ...f, email: 'demo@flowlens.app', password: 'demo1234' }));
+    }).catch(() => {});
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const [show, setShow] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -116,7 +123,7 @@ export default function Login() {
           </div>
           <Button type="submit" disabled={busy} className="mt-6 w-full">{busy ? 'Please wait…' : mode === 'login' ? 'Sign in' : 'Create account'}</Button>
           <GoogleButton mode={mode} onCredential={googleLogin} onError={setError} />
-          {mode === 'login' && (
+          {mode === 'login' && demoEnabled && (
             <button type="button" onClick={() => setForm({ ...form, email: 'demo@flowlens.app', password: 'demo1234' })} className="mt-3 w-full rounded-lg border border-dashed border-slate-300 py-2 text-sm text-slate-600 hover:bg-slate-50">
               Fill in demo account (demo@flowlens.app)
             </button>
