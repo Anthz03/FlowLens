@@ -89,7 +89,7 @@ export default function Layout() {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 shrink-0 print:hidden items-center justify-between border-b border-slate-200/60 bg-white/70 px-4 backdrop-blur-md lg:px-10">
+        <header className="relative z-30 flex h-16 shrink-0 print:hidden items-center justify-between border-b border-slate-200/60 bg-white/70 px-4 backdrop-blur-md lg:px-10">
           <button className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 lg:hidden" onClick={() => setOpen(!open)} aria-label="Toggle menu">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
