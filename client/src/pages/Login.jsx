@@ -96,7 +96,7 @@ export default function Login() {
         </ul>
       </div>
       <div className="flex items-center justify-center p-6">
-        <form onSubmit={submit} className="w-full max-w-sm">
+        <form onSubmit={submit} className="anim-fade-up w-full max-w-sm">
           <Logo className="mb-6 h-9 w-auto lg:hidden" />
           <h1 className="text-2xl font-semibold text-slate-900">{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
           <p className="mb-6 mt-1 text-sm text-slate-500">{mode === 'login' ? 'Sign in to manage your business processes.' : 'Set up your business workspace in a minute.'}</p>

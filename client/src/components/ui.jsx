@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { scoreColor, scoreLabel } from '../lib/constants.js';
+import { CountUp } from './Reveal.jsx';
 
 export function PageHeader({ title, subtitle, children }) {
   return (
@@ -55,7 +56,7 @@ export function StatCard({ icon: Icon, label, value, hint, tone = 'brand' }) {
       <Icon aria-hidden size={92} strokeWidth={1.25} className={`absolute -bottom-4 -right-3 ${t.ghost}`} />
       <div className={`mb-4 inline-flex rounded-xl p-2.5 ${t.chip}`}><Icon size={20} /></div>
       <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-0.5 font-display text-[34px] font-semibold leading-none tracking-tight text-ink-900">{value}</p>
+      <p className="mt-0.5 font-display text-[34px] font-semibold leading-none tracking-tight text-ink-900"><CountUp value={value} /></p>
       {hint && <p className="mt-2 text-xs text-slate-400">{hint}</p>}
     </div>
   );
@@ -73,15 +74,23 @@ export function Badge({ children, tone = 'slate' }) {
 export const statusTone = { draft: 'amber', active: 'green', archived: 'slate' };
 
 // ---- Score indicators ----
+// Rings and bars start empty and fill in once mounted, so the change is visible.
+function useFilled() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => { const id = requestAnimationFrame(() => setReady(true)); return () => cancelAnimationFrame(id); }, []);
+  return ready;
+}
+
 export function ScoreRing({ score, size = 140, label = true, onDark = false }) {
+  const ready = useFilled();
   const r = 52, c = 2 * Math.PI * r, color = onDark ? '#A5B4FC' : scoreColor(score);
   return (
     <div className="relative inline-flex flex-col items-center" style={{ width: size }}>
       <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label={`Health score ${score} out of 100`}>
         <circle cx="60" cy="60" r={r} fill="none" stroke={onDark ? 'rgb(255 255 255 / 0.12)' : '#e8eaf4'} strokeWidth="9" />
         <circle cx="60" cy="60" r={r} fill="none" stroke={color} strokeWidth="9" strokeLinecap="round"
-          strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} transform="rotate(-90 60 60)" style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
-        <text x="60" y="62" textAnchor="middle" fontSize="30" fontWeight="600" fontFamily="var(--font-display)" fill={onDark ? '#fff' : '#1E1B4B'}>{score}</text>
+          strokeDasharray={c} strokeDashoffset={c * (1 - (ready ? score : 0) / 100)} transform="rotate(-90 60 60)" style={{ transition: 'stroke-dashoffset 0.9s cubic-bezier(0.2, 0.7, 0.2, 1)' }} />
+        <text x="60" y="62" textAnchor="middle" fontSize="30" fontWeight="600" fontFamily="var(--font-display)" fill={onDark ? '#fff' : '#1E1B4B'}><CountUp value={score} duration={900} /></text>
         <text x="60" y="78" textAnchor="middle" fontSize="9" fill={onDark ? '#A5B4FC' : '#94a3b8'}>out of 100</text>
       </svg>
       {label && <span className="-mt-1 text-xs font-medium" style={{ color }}>{scoreLabel(score)}</span>}
@@ -90,10 +99,11 @@ export function ScoreRing({ score, size = 140, label = true, onDark = false }) {
 }
 
 export function ScoreBar({ label, value }) {
+  const ready = useFilled();
   return (
     <div>
       <div className="mb-1.5 flex justify-between text-sm"><span className="text-slate-600">{label}</span><span className="font-semibold text-ink-900">{value}</span></div>
-      <div className="h-2 rounded-full bg-slate-100"><div className="h-2 rounded-full transition-[width] duration-500" style={{ width: `${value}%`, background: scoreColor(value) }} /></div>
+      <div className="h-2 rounded-full bg-slate-100"><div className="h-2 rounded-full transition-[width] duration-700 ease-out" style={{ width: `${ready ? value : 0}%`, background: scoreColor(value) }} /></div>
     </div>
   );
 }
@@ -144,8 +154,8 @@ export function Modal({ open, title, onClose, children, footer, wide }) {
   }, [open, onClose]);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/50 p-4 backdrop-blur-[2px]" onMouseDown={onClose}>
-      <div role="dialog" aria-modal="true" aria-label={title} className={`flex max-h-[90vh] w-full flex-col rounded-2xl bg-white shadow-lift ${wide ? 'max-w-2xl' : 'max-w-md'}`} onMouseDown={(e) => e.stopPropagation()}>
+    <div className="anim-fade-in fixed inset-0 z-50 flex items-center justify-center bg-ink-950/50 p-4 backdrop-blur-[2px]" onMouseDown={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={title} className={`anim-pop flex max-h-[90vh] w-full flex-col rounded-2xl bg-white shadow-lift ${wide ? 'max-w-2xl' : 'max-w-md'}`} onMouseDown={(e) => e.stopPropagation()}>
         <header className="flex items-center justify-between px-6 pb-2 pt-5">
           <h2 className="font-display text-lg font-semibold text-ink-900">{title}</h2>
           <button onClick={onClose} aria-label="Close" className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100"><X size={18} /></button>
@@ -249,5 +259,5 @@ export function EmptyState({ title, text, action }) {
   );
 }
 export function ErrorBox({ error }) {
-  return error ? <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null;
+  return error ? <div role="alert" className="anim-shake mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null;
 }

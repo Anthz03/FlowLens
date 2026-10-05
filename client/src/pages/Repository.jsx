@@ -54,7 +54,7 @@ export default function Repository() {
       {filtered.length === 0 ? (
         <EmptyState title="No processes found" text="Try different filters, or document a new process." action={<Button to="/processes/new">Create process</Button>} />
       ) : view === 'grid' ? (
-        <div data-tour="repo-list" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={setToDelete} />)}</div>
+        <div data-tour="repo-list" className="stagger grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={setToDelete} />)}</div>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
           <DataTable rows={filtered} columns={[

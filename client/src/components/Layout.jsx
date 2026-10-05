@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, PlusCircle, Compass, Workflow, Activity, GitCompare, Menu, X, Plus, HelpCircle, LogOut, Sparkles } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
 import Logo from './Logo.jsx';
@@ -58,6 +58,7 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const [tour, setTour] = useState(false);
   const [menu, setMenu] = useState(false);
+  const { pathname } = useLocation();
 
   // First visit: start the tutorial automatically
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function Layout() {
             </div>
           </div>
         </header>
-        <main id="main" className="flex-1 overflow-y-auto p-4 lg:p-10"><div className="mx-auto max-w-[1280px]"><Outlet /></div></main>
+        <main id="main" className="flex-1 overflow-y-auto p-4 lg:p-10"><div key={pathname} className="anim-fade-up mx-auto max-w-[1280px]"><Outlet /></div></main>
         {tour && <Tour onClose={closeTour} />}
       </div>
     </div>

@@ -73,3 +73,43 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: non
   .skeleton { animation: none; }
   *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
+
+/* ---------- Motion: small, quick, purposeful. All of it is switched off for reduced-motion users. ---------- */
+@keyframes fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+
+.anim-fade-up { animation: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.anim-fade-in { animation: fade-in 0.25s ease-out both; }
+.anim-pop { animation: pop-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; transform-box: fill-box; transform-origin: center; }
+.anim-float { animation: float 6s ease-in-out infinite; }
+.anim-shake { animation: shake 0.35s ease-in-out; }
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 0.7s ease-out forwards; }
+
+/* Children enter one after another */
+.stagger > * { animation: fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 70ms; }
+.stagger > *:nth-child(3) { animation-delay: 140ms; }
+.stagger > *:nth-child(4) { animation-delay: 210ms; }
+.stagger > *:nth-child(5) { animation-delay: 280ms; }
+.stagger > *:nth-child(6) { animation-delay: 350ms; }
+.stagger > *:nth-child(7) { animation-delay: 420ms; }
+.stagger > *:nth-child(n + 8) { animation-delay: 480ms; }
+
+/* Scroll reveal (landing page) */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.reveal.is-visible { opacity: 1; transform: none; }
+
+/* Arrow icons nudge forward on hover */
+.lucide-arrow-right { transition: transform 0.15s ease; }
+a:hover > .lucide-arrow-right, button:hover > .lucide-arrow-right { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up, .anim-fade-in, .anim-pop, .anim-float, .anim-shake, .stagger > * { animation: none !important; }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .draw { animation: none !important; stroke-dasharray: none; stroke-dashoffset: 0; }
+}

@@ -61,7 +61,7 @@ export default function Dashboard() {
   const label = (name) => { const tb = / \(TO-BE\)$/.test(name); const base = name.replace(/ \(TO-BE\)$/, ''); const max = tb ? 19 : 27; const b = base.length > max ? `${base.slice(0, max - 1)}…` : base; return tb ? `${b} · TO-BE` : b; };
 
   return (
-    <div className="space-y-8">
+    <div className="stagger space-y-8">
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-ink-900 via-ink-900 to-ink-800 p-7 text-white shadow-lift sm:p-9">
         <HeroPattern />
         <div className="relative flex flex-wrap items-center justify-between gap-8">

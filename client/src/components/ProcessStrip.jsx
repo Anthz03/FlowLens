@@ -13,11 +13,11 @@ export default function ProcessStrip({ steps = [], className = 'h-8 w-full' }) {
   const w = (list.length - 1) * GAP + 28;
   return (
     <svg viewBox={`0 0 ${w} 36`} className={className} preserveAspectRatio="xMinYMid meet" role="img" aria-label={`Process with ${list.length} steps`}>
-      <path d={`M14 18H${w - 14}`} stroke="#c7d2fe" strokeWidth="3" strokeLinecap="round" />
+      <path d={`M14 18H${w - 14}`} pathLength="1" className="draw" stroke="#c7d2fe" strokeWidth="3" strokeLinecap="round" />
       {list.map((s, i) => {
         const x = 14 + i * GAP, k = kind(s), c = COLORS[k], slow = s.type === 'task' && s.estimatedTime >= 45;
         return (
-          <g key={s.key || i}>
+          <g key={s.key || i} className="anim-pop" style={{ animationDelay: `${Math.min(i, 14) * 45 + 120}ms` }}>
             <title>{`${s.name}${s.role ? ` · ${s.role}` : ''}${s.estimatedTime ? ` · ${s.estimatedTime} min` : ''}`}</title>
             {k === 'decision' && <path d={`M${x} 8L${x + 10} 18L${x} 28L${x - 10} 18Z`} fill={c} />}
             {(k === 'start' || k === 'end') && <circle cx={x} cy="18" r="7" fill={c} />}

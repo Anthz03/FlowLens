@@ -98,7 +98,7 @@ export default function Onboarding() {
           <ErrorBox error={error} />
 
           {step === 0 && (
-            <div className="space-y-5">
+            <div className="anim-fade-up space-y-5">
               <Field label="What is your company called?"><TextInput value={f.businessName} onChange={(e) => set('businessName')(e.target.value)} autoFocus /></Field>
               <Field label="What kind of business is it?"><Select placeholder="Choose one…" options={INDUSTRIES} value={f.industry} onChange={(e) => set('industry')(e.target.value)} /></Field>
               <div><span className="mb-2 block text-sm font-medium text-slate-700">How many people work there?</span><Choices label="Company size" options={SIZES} value={f.size} onChange={set('size')} /></div>
@@ -116,7 +116,7 @@ export default function Onboarding() {
           )}
 
           {step === 1 && (
-            <div className="space-y-5">
+            <div className="anim-fade-up space-y-5">
               <div><span className="mb-2 block text-sm font-medium text-slate-700">What is your role?</span><Choices label="Your role" options={ROLES} value={f.jobRole} onChange={set('jobRole')} /></div>
               <div>
                 <span className="mb-2 block text-sm font-medium text-slate-700">Where did you find FlowLens?</span>
@@ -127,7 +127,7 @@ export default function Onboarding() {
           )}
 
           {step === 2 && (
-            <div className="space-y-5">
+            <div className="anim-fade-up space-y-5">
               <div><span className="mb-2 block text-sm font-medium text-slate-700">What do you want to do with FlowLens?</span><p className="mb-2 text-xs text-slate-400">Pick all that apply.</p>
                 <Choices multi label="Goals" options={GOALS} value={f.goals} onChange={set('goals')} /></div>
               <div><span className="mb-2 block text-sm font-medium text-slate-700">How are your processes written down today?</span>
