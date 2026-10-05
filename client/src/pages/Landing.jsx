@@ -236,6 +236,22 @@ export default function Landing() {
           </ul>
         </section>
 
+        {/* What data we ask for, and why (shown to everyone, no login needed) */}
+        <section id="your-data" className="mx-auto max-w-6xl scroll-mt-20 px-5 pb-24">
+          <div className="grid gap-10 rounded-3xl border border-slate-200/70 bg-white p-8 shadow-card lg:grid-cols-[1fr_1.4fr] lg:p-12">
+            <SectionTitle eyebrow="Your data, explained" title="What we ask for, and why.">
+              FlowLens only asks for what it needs to run your account. We never sell your information or use it for advertising.
+            </SectionTitle>
+            <ul className="space-y-5 self-center text-[15px] leading-relaxed text-slate-600">
+              <li><b className="text-ink-900">Email sign-up:</b> your name, email and a password (stored only as a one-way hash) to create and secure your account.</li>
+              <li><b className="text-ink-900">Sign in with Google:</b> we receive only your <b className="text-ink-900">name, email address and profile picture</b>, and use them only to create your account and sign you in. We do not access your Gmail, Drive, Calendar or contacts.</li>
+              <li><b className="text-ink-900">Your processes:</b> what you type in is visible to people in your own company, according to their role, and to no one else.</li>
+              <li><b className="text-ink-900">You stay in control:</b> download all your data any time, and ask us to delete it.</li>
+              <li>Read the full <Link to="/privacy" className="font-medium text-brand-700 underline">Privacy Policy</Link> and <Link to="/terms" className="font-medium text-brand-700 underline">Terms of Service</Link>.</li>
+            </ul>
+          </div>
+        </section>
+
         {/* Final call to action */}
         <section className="px-5 pb-24">
           <Reveal className="relative mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-ink-900 via-ink-900 to-ink-800 px-8 py-16 text-center text-white shadow-lift sm:px-16">

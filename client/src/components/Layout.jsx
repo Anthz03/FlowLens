@@ -52,6 +52,11 @@ function Sidebar({ onNavigate, onTour }) {
         <p className="mt-1 text-xs leading-relaxed text-brand-200/70">Take the 2-minute tour of every page.</p>
         <button onClick={() => { onNavigate?.(); onTour(); }} className="mt-3 w-full rounded-lg bg-white/10 py-1.5 text-xs font-medium text-white transition hover:bg-white/20">Start the tour</button>
       </div>
+      <p className="px-6 pb-4 text-[11px] text-brand-300/50">
+        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Privacy Policy</a>
+        <span aria-hidden> · </span>
+        <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">Terms</a>
+      </p>
     </aside>
   );
 }
