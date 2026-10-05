@@ -1,8 +1,10 @@
 import { Field, TextInput, TextArea, Select, Toggle } from './ui.jsx';
 import { STEP_TYPES, DEPARTMENTS } from '../lib/constants.js';
+import { useDepartments } from '../lib/auth.jsx';
 
 // Shared editor for one process step (used in the Create/Edit modal and the Process Map side panel).
 export default function StepFields({ step, onChange, compact = false }) {
+  const departments = useDepartments(DEPARTMENTS);
   const set = (k) => (e) => onChange({ ...step, [k]: e.target.value });
   const span = compact ? "" : "sm:col-span-2";
   const isTask = step.type === 'task' || step.type === 'decision';
@@ -16,7 +18,7 @@ export default function StepFields({ step, onChange, compact = false }) {
       {isTask && <>
         <Field label="Employee / role" hint="Who is responsible?"><TextInput value={step.role} onChange={set('role')} placeholder="e.g. Sales Rep" /></Field>
         <Field label="Department"><TextInput list="dept-list" value={step.department} onChange={set('department')} placeholder="e.g. Sales" />
-          <datalist id="dept-list">{DEPARTMENTS.map((d) => <option key={d} value={d} />)}</datalist></Field>
+          <datalist id="dept-list">{departments.map((d) => <option key={d} value={d} />)}</datalist></Field>
         <Field label="Tool / system"><TextInput value={step.tool} onChange={set('tool')} placeholder="e.g. Excel, QuickBooks, Email" /></Field>
         <div className="flex items-end pb-2"><Toggle checked={step.isManual} onChange={(v) => onChange({ ...step, isManual: v })} label="Performed manually" /></div>
         <Field label="Inputs"><TextInput value={step.inputs} onChange={set('inputs')} placeholder="What is needed to start?" /></Field>

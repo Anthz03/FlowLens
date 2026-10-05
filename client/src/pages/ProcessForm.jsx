@@ -5,6 +5,7 @@ import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Field, TextInput, TextArea, Select, Modal, DataTable, Badge, Loading, ErrorBox } from '../components/ui.jsx';
 import StepFields from '../components/StepFields.jsx';
 import { DEPARTMENTS, STATUSES, newStep, uid } from '../lib/constants.js';
+import { useDepartments } from '../lib/auth.jsx';
 
 const seqEdges = (steps) => steps.slice(1).map((s, i) => ({ key: uid(), source: steps[i].key, target: s.key, label: '' }));
 const isSequential = (steps, edges) => edges.length === Math.max(0, steps.length - 1) && steps.slice(1).every((s, i) => edges.some((e) => e.source === steps[i].key && e.target === s.key));
@@ -12,6 +13,7 @@ const isSequential = (steps, edges) => edges.length === Math.max(0, steps.length
 export default function ProcessForm() {
   const { id } = useParams();
   const nav = useNavigate();
+  const departments = useDepartments(DEPARTMENTS);
   const [form, setForm] = useState({ name: '', description: '', department: '', status: 'draft', version: 'as-is' });
   const [steps, setSteps] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -85,7 +87,7 @@ export default function ProcessForm() {
           <Field label="Process name *" className="sm:col-span-2"><TextInput value={form.name} onChange={setF('name')} placeholder="e.g. Customer Order Fulfillment" /></Field>
           <Field label="Description" className="sm:col-span-2"><TextArea value={form.description} onChange={setF('description')} placeholder="What is this process for, and when does it start and end?" /></Field>
           <Field label="Primary department"><TextInput list="process-depts" value={form.department} onChange={setF('department')} placeholder="e.g. Sales" />
-            <datalist id="process-depts">{DEPARTMENTS.map((d) => <option key={d} value={d} />)}</datalist></Field>
+            <datalist id="process-depts">{departments.map((d) => <option key={d} value={d} />)}</datalist></Field>
           <Field label="Status"><Select options={STATUSES} value={form.status} onChange={setF('status')} /></Field>
         </div>
       </Card>

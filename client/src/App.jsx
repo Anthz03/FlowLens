@@ -3,6 +3,7 @@ import { useAuth } from './lib/auth.jsx';
 import Layout from './components/Layout.jsx';
 import { Loading } from './components/ui.jsx';
 import Login from './pages/Login.jsx';
+import Onboarding from './pages/Onboarding.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Repository from './pages/Repository.jsx';
 import ProcessForm from './pages/ProcessForm.jsx';
@@ -16,7 +17,12 @@ function RequireAuth() {
   const { user, ready } = useAuth();
   const location = useLocation();
   if (!ready) return <Loading />;
-  return user ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  // New accounts answer the setup questions first; once done, /welcome is no longer needed.
+  const done = !!user.onboarding?.completed;
+  if (!done && location.pathname !== '/welcome') return <Navigate to="/welcome" replace />;
+  if (done && location.pathname === '/welcome') return <Navigate to="/" replace />;
+  return <Outlet />;
 }
 
 export default function App() {
@@ -24,6 +30,7 @@ export default function App() {
     <Routes>
       <Route path="login" element={<Login />} />
       <Route element={<RequireAuth />}>
+        <Route path="welcome" element={<Onboarding />} />
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="processes" element={<Repository />} />

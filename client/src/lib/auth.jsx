@@ -4,6 +4,13 @@ import { api, getToken, setToken } from './api.js';
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
+// Departments to suggest in forms: the business's own list, falling back to common ones.
+export function useDepartments(defaults) {
+  const { user } = useAuth();
+  const own = user?.business?.departments || [];
+  return own.length ? own : defaults;
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(!getToken());
@@ -20,5 +27,5 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => start(await api.login({ email, password }));
   const register = async (form) => start(await api.register(form));
 
-  return <AuthContext.Provider value={{ user, ready, login, register, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, ready, login, register, logout }}>{children}</AuthContext.Provider>;
 }

@@ -1,14 +1,52 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FolderKanban, HeartPulse, Hand, Timer, Plus, Compass, AlertTriangle } from 'lucide-react';
+import { FolderKanban, HeartPulse, Hand, Timer, Plus, Compass, AlertTriangle, ArrowRight } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 import { api } from '../lib/api.js';
-import { PageHeader, Card, StatCard, Button, Loading, ErrorBox, Badge, ScoreBadge, DataTable, statusTone } from '../components/ui.jsx';
+import { PageHeader, Card, StatCard, EmptyState, Button, Loading, ErrorBox, Badge, ScoreBadge, DataTable, statusTone } from '../components/ui.jsx';
 import { scoreColor } from '../lib/constants.js';
+import { useAuth } from '../lib/auth.jsx';
+
+// Maps what the user said they want (during setup) to a concrete first action.
+const NEXT_STEPS = {
+  'Write down how we work': ['Describe your first process in plain words', '/discovery'],
+  'Find problems and delays': ['Check a process for problems', '/analysis'],
+  'Reduce manual work': ['See which tasks are done by hand', '/analysis'],
+  'Make clear who is responsible': ['Add a process and assign an owner to each step', '/processes/new'],
+  'Plan and compare improvements': ['Compare today with an improved version', '/compare'],
+  'Train new employees': ['Build your library of documented processes', '/processes'],
+};
+
+function Welcome({ user }) {
+  const key = `flowlens_welcome_hidden_${user._id}`;
+  const [hidden, setHidden] = useState(() => { try { return !!localStorage.getItem(key); } catch { return false; } });
+  const ob = user.onboarding;
+  if (hidden || !ob?.completed || ob.skipped) return null;
+  const picks = (ob.goals || []).map((g) => NEXT_STEPS[g]).filter(Boolean);
+  if ((ob.documentation || []).some((d) => d.startsWith('It is not written'))) picks.unshift(NEXT_STEPS['Write down how we work']);
+  const unique = [...new Map(picks.map((p) => [p[1], p])).values()].slice(0, 3);
+  if (!unique.length) unique.push(NEXT_STEPS['Write down how we work']);
+  const hide = () => { setHidden(true); try { localStorage.setItem(key, '1'); } catch { /* ignore */ } };
+  return (
+    <div className="mb-6 rounded-xl border border-brand-100 bg-brand-50 p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="font-semibold text-slate-900">Welcome, {user.name.split(' ')[0]}! Here is where we suggest you start</h2>
+          {ob.challenge && <p className="mt-1 text-sm text-slate-600">Your biggest problem: <i>“{ob.challenge}”</i></p>}
+        </div>
+        <button onClick={hide} className="shrink-0 text-xs text-slate-500 hover:underline">Hide</button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {unique.map(([label, to], i) => <Button key={to} to={to} variant={i === 0 ? 'primary' : 'secondary'} size="sm">{label}<ArrowRight size={14} /></Button>)}
+      </div>
+    </div>
+  );
+}
 
 const PIE = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [d, setD] = useState(null);
   const [error, setError] = useState('');
   useEffect(() => { api.dashboard().then(setD).catch((e) => setError(e.message)); }, []);
@@ -22,6 +60,8 @@ export default function Dashboard() {
         <Button to="/processes/new"><Plus size={16} />Create process</Button>
       </PageHeader>
 
+      <Welcome user={user} />
+
       <div data-tour="dash-stats" className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={FolderKanban} label="Processes" value={t.processes} hint={`${t.asIs} AS-IS · ${t.toBe} TO-BE`} />
         <StatCard icon={HeartPulse} label="Average health score" value={`${t.avgScore}/100`} tone={t.avgScore >= 75 ? 'green' : t.avgScore >= 50 ? 'amber' : 'red'} />
@@ -29,6 +69,10 @@ export default function Dashboard() {
         <StatCard icon={Timer} label="Possible bottlenecks" value={t.bottlenecks} tone="red" hint={`${t.handoffs} handoffs in total`} />
       </div>
 
+      {t.processes === 0 ? (
+        <EmptyState title="No processes yet" text="Start by describing one process of your business. It only takes a few minutes, and the charts and health scores will appear here."
+          action={<div className="flex gap-2"><Button to="/discovery"><Compass size={16} />Discover a process</Button><Button variant="secondary" to="/processes/new">Create manually</Button></div>} />
+      ) : (<>
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card title="Process health scores" className="lg:col-span-2">
           <div style={{ height: 260 }}>
@@ -80,6 +124,7 @@ export default function Dashboard() {
           )}
         </Card>
       </div>
+      </>)}
     </div>
   );
 }

@@ -19,6 +19,7 @@ export const api = {
   login: (body) => request('/auth/login', { method: 'POST', body }),
   register: (body) => request('/auth/register', { method: 'POST', body }),
   me: () => request('/auth/me'),
+  saveOnboarding: (body) => request('/auth/onboarding', { method: 'POST', body }),
   dashboard: () => request('/dashboard'),
   processes: (q = '') => request(`/processes${q}`),
   process: (id) => request(`/processes/${id}`),
