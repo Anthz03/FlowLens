@@ -113,3 +113,11 @@ a:hover > .lucide-arrow-right, button:hover > .lucide-arrow-right { transform: t
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .draw { animation: none !important; stroke-dasharray: none; stroke-dashoffset: 0; }
 }
+
+/* Printing a process (Export > Print or save as PDF): plain white page, no animation */
+@media print {
+  body { background: #fff !important; }
+  body::before { display: none !important; }
+  .anim-fade-up, .stagger > * { animation: none !important; }
+  section, article { break-inside: avoid; box-shadow: none !important; }
+}

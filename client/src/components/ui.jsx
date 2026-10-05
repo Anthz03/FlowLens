@@ -11,7 +11,7 @@ export function PageHeader({ title, subtitle, children }) {
         <h1 className="font-display text-3xl font-semibold tracking-tight text-ink-900">{title}</h1>
         {subtitle && <p className="mt-1.5 text-[15px] leading-relaxed text-slate-500">{subtitle}</p>}
       </div>
-      <div className="flex flex-wrap items-center gap-2">{children}</div>
+      <div className="flex flex-wrap items-center gap-2 print:hidden">{children}</div>
     </div>
   );
 }
@@ -260,4 +260,11 @@ export function EmptyState({ title, text, action }) {
 }
 export function ErrorBox({ error }) {
   return error ? <div role="alert" className="anim-shake mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null;
+}
+
+// Inline success / error message (renders nothing when there is no text)
+export function Notice({ tone = 'success', children }) {
+  if (!children) return null;
+  const t = tone === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-800';
+  return <div role={tone === 'error' ? 'alert' : 'status'} className={`anim-fade-in rounded-xl border px-4 py-3 text-sm ${t}`}>{children}</div>;
 }

@@ -4,6 +4,7 @@ import { Workflow, Activity, Pencil, Copy, Trash2, GitCompare, Hand, Zap } from 
 import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Loading, ErrorBox, Badge, DataTable, ScoreRing, ConfirmModal, statusTone } from '../components/ui.jsx';
 import ProcessStrip, { StripLegend } from '../components/ProcessStrip.jsx';
+import ExportMenu from '../components/ExportMenu.jsx';
 import { fmtTime } from '../lib/constants.js';
 import { useAuth } from '../lib/auth.jsx';
 
@@ -29,10 +30,12 @@ export default function ProcessDetails() {
 
   return (
     <div>
+      <div className="mb-4 hidden items-center justify-between border-b border-slate-300 pb-3 text-sm text-slate-500 print:flex"><span>FlowLens · Process report</span><span>{new Date().toLocaleDateString()}</span></div>
       <PageHeader title={p.name} subtitle={p.description || 'No description yet.'}>
         <Button variant="secondary" to={`/processes/${id}/edit`}><Pencil size={16} />Edit</Button>
         <Button variant="secondary" to={`/processes/${id}/map`}><Workflow size={16} />Map</Button>
         <Button variant="secondary" to={`/processes/${id}/analysis`}><Activity size={16} />Analysis</Button>
+        <ExportMenu processId={id} />
         {p.version !== 'to-be' && <Button variant="secondary" onClick={toBe}><Copy size={16} />Duplicate as TO-BE</Button>}
         {user.permission !== 'member' && <Button variant="ghost" onClick={() => setConfirm(true)} aria-label="Delete process"><Trash2 size={16} className="text-red-500" /></Button>}
       </PageHeader>

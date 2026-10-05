@@ -172,7 +172,7 @@ test('sessions: change password and sign-out-everywhere revoke old tokens; /me r
   assert.equal(me.status, 200);
   assert.ok(me.json.token, 'fresh token issued');
 
-  assert.equal((await call('POST', '/auth/change-password', { token: U.token, body: { currentPassword: 'Not-the-one-1', newPassword: 'Another99pass' } })).status, 401);
+  assert.equal((await call('POST', '/auth/change-password', { token: U.token, body: { currentPassword: 'Not-the-one-1', newPassword: 'Another99pass' } })).status, 400);
   assert.equal((await call('POST', '/auth/change-password', { token: U.token, body: { currentPassword: PW, newPassword: 'weak' } })).status, 400);
   const changed = await call('POST', '/auth/change-password', { token: U.token, body: { currentPassword: PW, newPassword: 'Another99pass' } });
   assert.equal(changed.status, 200);

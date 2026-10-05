@@ -14,6 +14,7 @@ import Compare from './pages/Compare.jsx';
 import ProcessDetails from './pages/ProcessDetails.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Landing from './pages/Landing.jsx';
+import Settings from './pages/Settings.jsx';
 
 function RequireAuth() {
   const { user, ready } = useAuth();
@@ -23,7 +24,7 @@ function RequireAuth() {
   // New accounts answer the setup questions first; once done, /welcome is no longer needed.
   const done = !!user.onboarding?.completed;
   if (!done && location.pathname !== '/welcome') return <Navigate to="/welcome" replace />;
-  if (done && location.pathname === '/welcome') return <Navigate to="/" replace />;
+  if (done && location.pathname === '/welcome' && !location.search.includes('redo')) return <Navigate to="/" replace />;
   return <Outlet />;
 }
 
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="analysis" element={<Analysis />} />
           <Route path="compare" element={<Compare />} />
           <Route path="discovery" element={<Discovery />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Route>

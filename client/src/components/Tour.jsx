@@ -31,6 +31,7 @@ function buildSteps(sample) {
     { path: compare, target: sample?.tobe ? 'compare-table' : 'compare-select', title: 'Compare: before and after', text: 'See today\'s process next to the improved one: number of steps, manual jobs, time and score, with how much better it got in percent.' },
   );
   else steps.push({ path: '/compare', target: 'compare-select', title: 'Compare: before and after', text: 'Once you have a process, choose it here, create an improved version, and see both side by side with the percent improvement.' });
+  steps.push({ path: '/settings', target: 'settings-tabs', title: 'Settings', text: 'Change your profile and password, set up your company and team, and download your data. You can also replay this tour from the Profile tab.', tip: 'Owners and admins also see Team and roles, Analysis rules and the Activity log.' });
   steps.push({ path: '/', target: 'help-button', title: 'You are ready! 🎉', text: 'A good first step: open Process Discovery and type in one real process from your business.', tip: 'Click "Take the tour" any time to see this guide again.' });
   return steps;
 }

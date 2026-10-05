@@ -2,11 +2,21 @@
 const STOP = new Set(['the', 'and', 'for', 'with', 'from', 'into', 'new', 'step']);
 const words = (s = '') => s.toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w));
 
-export function similar(a, b) {
+// Thresholds an owner can tune in Settings. The defaults are the original built-in values.
+export const DEFAULT_RULES = {
+  bottleneckMinutes: 45,    // a step this long (or longer) is a possible bottleneck
+  slowFactor: 2,            // ...or one at least 20 min that is this many times the process average
+  maxHandoffs: 3,           // more handoffs than this is "excessive"
+  duplicateSimilarity: 0.6, // how alike two step names must be to be flagged as duplicates (0.5 - 1)
+  longProcessSteps: 12,     // more activities than this is a long process
+  maxDecisions: 3,          // more decision points than this is flagged as complex
+};
+
+export function similar(a, b, threshold = DEFAULT_RULES.duplicateSimilarity) {
   const A = new Set(words(a)), B = new Set(words(b));
   if (!A.size || !B.size) return false;
   const inter = [...A].filter((w) => B.has(w)).length;
-  return inter / new Set([...A, ...B]).size >= 0.6;
+  return inter / new Set([...A, ...B]).size >= threshold;
 }
 
 const clamp = (n) => Math.max(0, Math.min(100, Math.round(n)));
@@ -18,7 +28,7 @@ export function effectiveEdges(steps, edges = []) {
   return ordered.slice(1).map((s, i) => ({ source: ordered[i].key, target: s.key, label: '' }));
 }
 
-export function computeMetrics(process) {
+export function computeMetrics(process, rules = DEFAULT_RULES) {
   const steps = [...(process.steps || [])].sort((a, b) => a.order - b.order);
   const work = steps.filter((s) => s.type === 'task' || s.type === 'decision');
   const edges = effectiveEdges(steps, process.edges);
@@ -28,11 +38,11 @@ export function computeMetrics(process) {
     return a && b && a.role && b.role && !same(a.role, b.role);
   });
   const avgTime = work.length ? work.reduce((t, s) => t + (s.estimatedTime || 0), 0) / work.length : 0;
-  const bottlenecks = work.filter((s) => s.estimatedTime >= 45 || (s.estimatedTime >= 20 && s.estimatedTime > avgTime * 2));
+  const bottlenecks = work.filter((s) => s.estimatedTime >= rules.bottleneckMinutes || (s.estimatedTime >= 20 && s.estimatedTime > avgTime * rules.slowFactor));
   const duplicates = [];
   for (let i = 0; i < work.length; i++)
     for (let j = i + 1; j < work.length; j++)
-      if (similar(work[i].name, work[j].name)) duplicates.push([work[i], work[j]]);
+      if (similar(work[i].name, work[j].name, rules.duplicateSimilarity)) duplicates.push([work[i], work[j]]);
   return {
     steps, edges, byKey, work, handoffEdges, bottlenecks, duplicates, avgTime,
     stepCount: steps.length,
@@ -47,8 +57,8 @@ export function computeMetrics(process) {
   };
 }
 
-export function analyzeProcess(process) {
-  const m = computeMetrics(process);
+export function analyzeProcess(process, rules = DEFAULT_RULES) {
+  const m = computeMetrics(process, rules);
   const n = m.work.length || 1;
   const findings = [];
   const add = (type, severity, title, detail, steps = []) => findings.push({ type, severity, title, detail, steps });
@@ -61,14 +71,14 @@ export function analyzeProcess(process) {
     const a = m.byKey[e.source], b = m.byKey[e.target];
     add('handoff', m.handoffs > 3 ? 'medium' : 'low', `Handoff: ${a.role} → ${b.role}`, `Work passes from "${a.name}" to "${b.name}".`, [a.name, b.name]);
   });
-  if (m.handoffs > 3 || (m.edges.length && m.handoffs / m.edges.length > 0.5))
+  if (m.handoffs > rules.maxHandoffs || (m.edges.length && m.handoffs / m.edges.length > 0.5))
     add('handoff', 'high', 'Excessive handoffs', `${m.handoffs} handoffs across ${m.edges.length} connections. Each handoff adds waiting time and risk of miscommunication.`);
   const unclear = m.work.filter((s) => !s.role);
   unclear.forEach((s) => add('responsibility', 'high', `Unclear responsibility: ${s.name}`, 'No employee or role is assigned to this step.', [s.name]));
   m.work.filter((s) => s.role && !s.department).forEach((s) => add('responsibility', 'low', `No department: ${s.name}`, 'Assign a department to clarify ownership.', [s.name]));
   m.work.filter((s) => !s.description).forEach((s) => add('documentation', 'low', `Undocumented step: ${s.name}`, 'Add a description so others can follow this step.', [s.name]));
-  if (m.taskCount > 12) add('complexity', 'medium', 'Long process', `${m.taskCount} activities. Consider splitting into sub-processes or removing unnecessary steps.`);
-  if (m.decisionCount > 3) add('complexity', 'medium', 'Many decision points', `${m.decisionCount} decisions make this flow hard to follow and test.`);
+  if (m.taskCount > rules.longProcessSteps) add('complexity', 'medium', 'Long process', `${m.taskCount} activities. Consider splitting into sub-processes or removing unnecessary steps.`);
+  if (m.decisionCount > rules.maxDecisions) add('complexity', 'medium', 'Many decision points', `${m.decisionCount} decisions make this flow hard to follow and test.`);
 
   // Category scores (0-100)
   const doc = m.work.reduce((t, s) => t + [s.description, s.tool, s.inputs, s.outputs].filter(Boolean).length / 4, 0) / n * 100;
@@ -87,7 +97,7 @@ export function analyzeProcess(process) {
   if (manual.length) recommendations.push(`Automate or digitize the ${manual.length} manual task(s), starting with the longest ones.`);
   if (m.bottlenecks.length) recommendations.push(`Break down or parallelize: ${m.bottlenecks.map((s) => s.name).join(', ')}.`);
   if (m.duplicates.length) recommendations.push('Merge duplicate steps to remove rework.');
-  if (m.handoffs > 3) recommendations.push('Reduce handoffs by consolidating consecutive steps under one role.');
+  if (m.handoffs > rules.maxHandoffs) recommendations.push('Reduce handoffs by consolidating consecutive steps under one role.');
   if (unclear.length) recommendations.push('Assign an owner (role or employee) to every step.');
   if (categories.Documentation < 60) recommendations.push('Improve documentation: add descriptions, tools, inputs and outputs.');
   if (!recommendations.length) recommendations.push('This process looks healthy. Review it periodically.');

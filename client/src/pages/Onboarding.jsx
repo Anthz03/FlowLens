@@ -7,15 +7,15 @@ import { useAuth } from '../lib/auth.jsx';
 import { Button, Field, TextInput, TextArea, Select, ErrorBox } from '../components/ui.jsx';
 import { DEPARTMENTS } from '../lib/constants.js';
 
-const INDUSTRIES = ['Retail & Wholesale', 'Food & Beverage', 'Manufacturing', 'Professional Services', 'Healthcare', 'Education & Training', 'Construction', 'Logistics & Transport', 'Technology / IT', 'Other'];
-const SIZES = ['Just me', '2–10 people', '11–50 people', '51–250 people'];
+export const INDUSTRIES = ['Retail & Wholesale', 'Food & Beverage', 'Manufacturing', 'Professional Services', 'Healthcare', 'Education & Training', 'Construction', 'Logistics & Transport', 'Technology / IT', 'Other'];
+export const SIZES = ['Just me', '2–10 people', '11–50 people', '51–250 people'];
 const ROLES = ['Owner / Founder', 'Manager', 'Operations / Process lead', 'Team member', 'Consultant', 'Student / Teacher', 'Other'];
 const SOURCES = ['Search engine (Google, Bing…)', 'Social media', 'Friend or colleague', 'School or training', 'Event or webinar', 'Other'];
 const GOALS = ['Write down how we work', 'Find problems and delays', 'Reduce manual work', 'Make clear who is responsible', 'Plan and compare improvements', 'Train new employees'];
 const DOCS = ['It is not written down (people just know)', 'Spreadsheets', 'Chat or messaging apps', 'Paper or notes', 'Word / PDF documents', 'Business software (ERP, CRM)'];
 
 // Selectable pill buttons; `multi` allows several answers.
-function Choices({ options, value, onChange, multi, label }) {
+export function Choices({ options, value, onChange, multi, label }) {
   const selected = (o) => (multi ? value.includes(o) : value === o);
   const toggle = (o) => onChange(multi ? (value.includes(o) ? value.filter((x) => x !== o) : [...value, o]) : o);
   return (
@@ -43,10 +43,13 @@ export default function Onboarding() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [custom, setCustom] = useState('');
-  const [sourceOther, setSourceOther] = useState('');
+  const redo = new URLSearchParams(window.location.search).has('redo'); // reached from Settings > Change my setup answers
+  const prev = user.onboarding?.completed && !user.onboarding?.skipped ? user.onboarding : {};
+  const prevOther = (prev.source || '').startsWith('Other: ');
+  const [sourceOther, setSourceOther] = useState(prevOther ? prev.source.slice(7) : '');
   const [f, setF] = useState({
     businessName: user.business?.name || '', industry: user.business?.industry || '', size: '', departments: user.business?.departments?.length ? user.business.departments : [],
-    jobRole: '', source: '', goals: [], documentation: [], challenge: '',
+    jobRole: prev.jobRole || '', source: prevOther ? 'Other' : prev.source || '', goals: prev.goals || [], documentation: prev.documentation || [], challenge: prev.challenge || '',
   });
   const set = (k) => (v) => { setError(''); setF((p) => ({ ...p, [k]: v })); };
 
@@ -73,7 +76,7 @@ export default function Onboarding() {
       const body = skip ? { skip: true } : { ...f, source: f.source === 'Other' ? `Other: ${sourceOther.trim()}` : f.source };
       const { user: u } = await api.saveOnboarding(body);
       setUser(u);
-      nav('/', { replace: true });
+      nav(redo ? '/settings' : '/', { replace: true });
     } catch (e) { setError(e.message); setBusy(false); }
   };
 
@@ -85,7 +88,9 @@ export default function Onboarding() {
       <div className="w-full max-w-2xl">
         <div className="mb-6 flex items-center justify-between">
           <Logo className="h-9 w-auto" />
-          <button onClick={() => finish(true)} disabled={busy} className="text-sm text-slate-500 hover:text-slate-700 hover:underline">Skip for now</button>
+          {redo
+            ? <button onClick={() => nav('/settings')} className="text-sm text-slate-500 hover:text-slate-700 hover:underline">Cancel</button>
+            : <button onClick={() => finish(true)} disabled={busy} className="text-sm text-slate-500 hover:text-slate-700 hover:underline">Skip for now</button>}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

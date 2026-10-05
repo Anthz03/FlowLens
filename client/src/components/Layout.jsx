@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderKanban, PlusCircle, Compass, Workflow, Activity, GitCompare, Menu, X, Plus, HelpCircle, LogOut, Sparkles } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, PlusCircle, Compass, Workflow, Activity, GitCompare, Menu, X, Plus, HelpCircle, LogOut, Sparkles, Settings } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
 import Logo from './Logo.jsx';
 import Tour, { tourKey } from './Tour.jsx';
@@ -18,6 +18,9 @@ const groups = [
   { label: 'Improve', items: [
     { to: '/analysis', label: 'Process Analysis', icon: Activity },
     { to: '/compare', label: 'AS-IS vs TO-BE', icon: GitCompare },
+  ] },
+  { label: 'Account', items: [
+    { to: '/settings', label: 'Settings', icon: Settings },
   ] },
 ];
 
@@ -67,13 +70,18 @@ export default function Layout() {
     if (!done) { const t = setTimeout(() => setTour(true), 600); return () => clearTimeout(t); }
     return undefined;
   }, [user._id]);
+  useEffect(() => { // lets other pages (Settings) start the tour
+    const start = () => setTour(true);
+    window.addEventListener('flowlens:start-tour', start);
+    return () => window.removeEventListener('flowlens:start-tour', start);
+  }, []);
   const closeTour = () => { setTour(false); try { localStorage.setItem(tourKey(user._id), '1'); } catch { /* ignore */ } };
   const initials = user.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden print:block print:h-auto print:overflow-visible">
       <a href="#main" className="sr-only z-[200] rounded-lg bg-white px-4 py-2 text-sm font-medium text-brand-700 shadow-lift focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
-      <div className="hidden lg:block"><Sidebar onTour={() => setTour(true)} /></div>
+      <div className="hidden lg:block print:hidden"><Sidebar onTour={() => setTour(true)} /></div>
       {open && (
         <div className="fixed inset-0 z-40 flex lg:hidden">
           <div className="shadow-lift"><Sidebar onNavigate={() => setOpen(false)} onTour={() => setTour(true)} /></div>
@@ -81,7 +89,7 @@ export default function Layout() {
         </div>
       )}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200/60 bg-white/70 px-4 backdrop-blur-md lg:px-10">
+        <header className="flex h-16 shrink-0 print:hidden items-center justify-between border-b border-slate-200/60 bg-white/70 px-4 backdrop-blur-md lg:px-10">
           <button className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 lg:hidden" onClick={() => setOpen(!open)} aria-label="Toggle menu">
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -94,13 +102,14 @@ export default function Layout() {
               {menu && (
                 <div className="absolute right-0 z-30 mt-2 w-60 rounded-xl border border-slate-200/70 bg-white p-1.5 shadow-lift" onMouseLeave={() => setMenu(false)}>
                   <div className="border-b border-slate-100 px-3 py-2.5"><p className="text-sm font-medium text-ink-900">{user.name}</p><p className="truncate text-xs text-slate-500">{user.email}</p></div>
-                  <button onClick={logout} className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"><LogOut size={15} />Sign out</button>
+                  <Link to="/settings" onClick={() => setMenu(false)} className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"><Settings size={15} />Settings</Link>
+                  <button onClick={logout} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"><LogOut size={15} />Sign out</button>
                 </div>
               )}
             </div>
           </div>
         </header>
-        <main id="main" className="flex-1 overflow-y-auto p-4 lg:p-10"><div key={pathname} className="anim-fade-up mx-auto max-w-[1280px]"><Outlet /></div></main>
+        <main id="main" className="flex-1 overflow-y-auto p-4 lg:p-10 print:overflow-visible print:p-0"><div key={pathname} className="anim-fade-up mx-auto max-w-[1280px]"><Outlet /></div></main>
         {tour && <Tour onClose={closeTour} />}
       </div>
     </div>

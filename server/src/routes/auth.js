@@ -5,12 +5,18 @@ import { hashPassword, verifyPassword, signToken, requireAuth, rank } from '../s
 import { audit } from '../services/audit.js';
 import { validate } from '../middleware/security.js';
 import { getConfig } from '../config.js';
-import { registerSchema, loginSchema, googleSchema, onboardingSchema, changePasswordSchema } from '../validation/schemas.js';
+import { registerSchema, loginSchema, googleSchema, onboardingSchema, changePasswordSchema, profileSchema } from '../validation/schemas.js';
 
 const router = Router();
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const BUSINESS_FIELDS = 'name industry size departments';
-const session = async (user) => ({ token: signToken(user), user: await user.populate('business', BUSINESS_FIELDS) });
+// The user as sent to the browser, plus which sign-in methods are set up (lets Settings show the right options).
+async function publicUser(user) {
+  const full = await User.findById(user._id).select('+passwordHash');
+  const json = (await user.populate('business', BUSINESS_FIELDS)).toJSON();
+  return { ...json, hasPassword: Boolean(full?.passwordHash), hasGoogle: Boolean(full?.googleId) };
+}
+const session = async (user) => ({ token: signToken(user), user: await publicUser(user) });
 
 router.post('/register', validate(registerSchema), wrap(async (req, res) => {
   const { name, email, password, businessName } = req.body;
@@ -77,7 +83,7 @@ router.post('/onboarding', requireAuth, validate(onboardingSchema), wrap(async (
     };
   }
   await user.save();
-  res.json({ user: await user.populate('business', BUSINESS_FIELDS) });
+  res.json({ user: await publicUser(user) });
 }));
 
 // Tells the client whether Google sign-in is available (and which client id to use).
@@ -98,7 +104,14 @@ router.post('/google', validate(googleSchema), wrap(async (req, res) => {
 
 // Returns the current user and a fresh token, so active people stay signed in while idle sessions expire.
 router.get('/me', requireAuth, wrap(async (req, res) => {
-  res.json({ user: await req.user.populate('business', BUSINESS_FIELDS), token: signToken(req.user) });
+  res.json({ user: await publicUser(req.user), token: signToken(req.user) });
+}));
+
+// Edit your own name and job title. Email, role and permissions cannot be changed here.
+router.put('/profile', requireAuth, validate(profileSchema), wrap(async (req, res) => {
+  Object.assign(req.user, req.body);
+  await req.user.save();
+  res.json({ user: await publicUser(req.user) });
 }));
 
 // Changing the password signs out every other device (token version bump) and returns a new token for this one.
@@ -106,7 +119,7 @@ router.post('/change-password', requireAuth, validate(changePasswordSchema), wra
   const user = await User.findById(req.user._id).select('+passwordHash');
   if (user.passwordHash) {
     const { ok } = await verifyPassword(req.body.currentPassword, user.passwordHash);
-    if (!ok) { await audit(req, 'password_change_failed', { user }); return res.status(401).json({ error: 'Your current password is incorrect.' }); }
+    if (!ok) { await audit(req, 'password_change_failed', { user }); return res.status(400).json({ error: 'Your current password is incorrect.' }); }
   }
   user.passwordHash = await hashPassword(req.body.newPassword);
   user.passwordChangedAt = new Date();

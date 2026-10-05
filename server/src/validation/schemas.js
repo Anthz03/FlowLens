@@ -78,3 +78,15 @@ export const userUpdateSchema = z.object({ name: str(80, 1), role: str(80), perm
   .refine((o) => Object.keys(o).length > 0, 'Nothing to update');
 export const businessUpdateSchema = z.object({ name: str(120, 1), industry: str(80), size: str(40), departments: z.array(str(60)).max(20) }).partial()
   .refine((o) => Object.keys(o).length > 0, 'Nothing to update');
+
+// ---- settings ----
+export const profileSchema = z.object({ name: str(80, 1), role: str(80) }).partial().refine((o) => Object.keys(o).length > 0, 'Nothing to update');
+export const analysisRulesSchema = z.object({
+  bottleneckMinutes: z.coerce.number().int().min(5).max(480),
+  slowFactor: z.coerce.number().min(1.5).max(10),
+  maxHandoffs: z.coerce.number().int().min(1).max(20),
+  duplicateSimilarity: z.coerce.number().min(0.5).max(1),
+  longProcessSteps: z.coerce.number().int().min(5).max(100),
+  maxDecisions: z.coerce.number().int().min(1).max(20),
+}).partial().strict().refine((o) => Object.keys(o).length > 0, 'Nothing to update');
+export const exportQuerySchema = z.object({ format: z.enum(['json', 'csv']).default('json') }).strict();

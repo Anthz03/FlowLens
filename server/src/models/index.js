@@ -48,6 +48,8 @@ export const Business = mongoose.model('Business', new Schema({
   industry: String,
   size: { type: String, default: 'Small' },
   departments: [String],
+  // Only the values an owner changed are stored; the rest come from DEFAULT_RULES
+  analysisRules: { bottleneckMinutes: Number, slowFactor: Number, maxHandoffs: Number, duplicateSimilarity: Number, longProcessSteps: Number, maxDecisions: Number },
 }, opts));
 
 const stepSchema = new Schema({

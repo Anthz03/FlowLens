@@ -1,10 +1,10 @@
-import { computeMetrics, similar } from './analyzer.js';
+import { computeMetrics, similar, DEFAULT_RULES } from './analyzer.js';
 
 // Generates an improved TO-BE copy of a process using simple rules. Returns { steps, edges, improvements }.
 const AUTOMATABLE = /(send|notify|email|e-mail|enter|input|record|log|update|copy|transfer|forward|generate|print|file|sync|remind|calculate|invoice)/i;
 
-export function optimizeProcess(process) {
-  const m = computeMetrics(process);
+export function optimizeProcess(process, rules = DEFAULT_RULES) {
+  const m = computeMetrics(process, rules);
   const steps = m.steps.map((s) => ({ ...s }));
   let edges = m.edges.map((e) => ({ ...e }));
   const improvements = [];
@@ -14,7 +14,7 @@ export function optimizeProcess(process) {
   for (let i = 0; i < steps.length; i++) {
     if (removed.has(steps[i].key) || steps[i].type !== 'task') continue;
     for (let j = i + 1; j < steps.length; j++) {
-      if (removed.has(steps[j].key) || steps[j].type !== 'task' || !similar(steps[i].name, steps[j].name)) continue;
+      if (removed.has(steps[j].key) || steps[j].type !== 'task' || !similar(steps[i].name, steps[j].name, rules.duplicateSimilarity)) continue;
       removed.add(steps[j].key);
       // bypass the removed step: connect its predecessors straight to its successors
       const rk = steps[j].key;

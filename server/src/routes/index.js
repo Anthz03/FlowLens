@@ -4,11 +4,13 @@ import { hashPassword, requireRole, rank, temporaryPassword } from '../services/
 import { audit } from '../services/audit.js';
 import { validate } from '../middleware/security.js';
 import { loadProcess, loadAllProcesses, replaceSteps, removeProcess } from '../services/processService.js';
-import { analyzeProcess } from '../services/analyzer.js';
+import { analyzeProcess, DEFAULT_RULES } from '../services/analyzer.js';
 import { optimizeProcess } from '../services/optimizer.js';
+import { getRules } from '../services/rules.js';
+import { toExportObject, toCsv } from '../services/exporter.js';
 import {
   processCreateSchema, processUpdateSchema, processQuerySchema, duplicateSchema, stepSchema, stepUpdateSchema,
-  analysisNotesSchema, userCreateSchema, userUpdateSchema, businessUpdateSchema,
+  analysisNotesSchema, userCreateSchema, userUpdateSchema, businessUpdateSchema, analysisRulesSchema, exportQuerySchema,
 } from '../validation/schemas.js';
 
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -91,6 +93,23 @@ export default function routes(limit) {
     res.json(target);
   }));
 
+  // Give someone a new one-time password (also unlocks a locked account and signs them out everywhere).
+  router.post('/users/:id/reset-password', requireRole('admin'), wrap(async (req, res) => {
+    if (String(req.user._id) === req.params.id) return res.status(400).json({ error: 'Use Change password in Security to change your own password.' });
+    const target = await User.findOne({ _id: req.params.id, business: req.user.business });
+    if (!target) return notFound(res);
+    if (req.user.permission !== 'owner' && rank(target.permission) >= rank(req.user.permission)) return forbidden(res, 'You cannot reset the password of someone with the same or a higher role.');
+    const password = temporaryPassword();
+    target.passwordHash = await hashPassword(password);
+    target.passwordChangedAt = new Date();
+    target.tokenVersion = (target.tokenVersion || 0) + 1;
+    target.failedLogins = 0;
+    target.lockUntil = undefined;
+    await target.save();
+    await audit(req, 'password_reset_by_admin', { user: req.user, meta: { target: String(target._id) } });
+    res.json({ temporaryPassword: password });
+  }));
+
   router.delete('/users/:id', requireRole('admin'), wrap(async (req, res) => {
     if (String(req.user._id) === req.params.id) return res.status(400).json({ error: 'You cannot delete your own account.' });
     const target = await User.findOne({ _id: req.params.id, business: req.user.business });
@@ -105,8 +124,8 @@ export default function routes(limit) {
   // ---------- Processes ----------
   router.get('/processes', validate(processQuerySchema, 'query'), wrap(async (req, res) => {
     const filter = { business: req.user.business, ...req.validatedQuery };
-    const list = await loadAllProcesses(filter);
-    res.json(list.map((p) => ({ ...p, analysis: (({ score, metrics }) => ({ score, metrics }))(analyzeProcess(p)) })));
+    const [list, rules] = await Promise.all([loadAllProcesses(filter), getRules(req.user.business)]);
+    res.json(list.map((p) => ({ ...p, analysis: (({ score, metrics }) => ({ score, metrics }))(analyzeProcess(p, rules)) })));
   }));
 
   router.get('/processes/:id', wrap(async (req, res) => {
@@ -150,7 +169,7 @@ export default function routes(limit) {
     const { optimize = false, version = 'to-be' } = req.body;
     let { steps, edges } = src;
     let improvements = [];
-    if (optimize) ({ steps, edges, improvements } = optimizeProcess(src));
+    if (optimize) ({ steps, edges, improvements } = optimizeProcess(src, await getRules(req.user.business)));
     const copy = await Process.create({
       name: `${src.name} (${version === 'to-be' ? 'TO-BE' : 'Copy'})`.slice(0, 200), description: src.description, department: src.department,
       status: 'draft', version, baseProcess: version === 'to-be' ? src._id : null, improvements,
@@ -184,10 +203,10 @@ export default function routes(limit) {
   }));
 
   // ---------- Analysis ----------
-  async function runAnalysis(processId) {
+  async function runAnalysis(processId, businessId) {
     const p = await loadProcess(processId);
     if (!p) return null;
-    const result = analyzeProcess(p);
+    const result = analyzeProcess(p, await getRules(businessId));
     return ProcessAnalysis.findOneAndUpdate({ process: processId }, { process: processId, ...result }, { upsert: true, new: true, setDefaultsOnInsert: true });
   }
   router.get('/analysis', wrap(async (req, res) => {
@@ -196,15 +215,48 @@ export default function routes(limit) {
   }));
   router.get('/analysis/process/:id', limit.heavy, wrap(async (req, res) => {
     // Always recompute so the result reflects the latest edits.
-    const a = await runAnalysis(req.params.id);
+    const a = await runAnalysis(req.params.id, req.user.business);
     a ? res.json(a) : notFound(res);
   }));
-  router.post('/analysis/process/:id', limit.heavy, wrap(async (req, res) => { const a = await runAnalysis(req.params.id); a ? res.status(201).json(a) : notFound(res); }));
+  router.post('/analysis/process/:id', limit.heavy, wrap(async (req, res) => { const a = await runAnalysis(req.params.id, req.user.business); a ? res.status(201).json(a) : notFound(res); }));
   router.put('/analysis/:id', validate(analysisNotesSchema), wrap(async (req, res) => {
     const a = await ProcessAnalysis.findByIdAndUpdate(req.params.id, { notes: req.body.notes }, { new: true });
     a ? res.json(a) : notFound(res);
   }));
   router.delete('/analysis/:id', requireRole('admin'), wrap(async (req, res) => { await ProcessAnalysis.findByIdAndDelete(req.params.id); res.json({ ok: true }); }));
+
+  // ---------- Settings: analysis rules ----------
+  router.get('/settings/analysis-rules', wrap(async (req, res) => res.json({ rules: await getRules(req.user.business), defaults: DEFAULT_RULES })));
+  router.put('/settings/analysis-rules', requireRole('admin'), validate(analysisRulesSchema), wrap(async (req, res) => {
+    const set = Object.fromEntries(Object.entries(req.body).map(([k, v]) => [`analysisRules.${k}`, v]));
+    await Business.updateOne({ _id: req.user.business }, { $set: set });
+    await audit(req, 'analysis_rules_changed', { user: req.user, meta: req.body });
+    res.json({ rules: await getRules(req.user.business), defaults: DEFAULT_RULES });
+  }));
+  router.delete('/settings/analysis-rules', requireRole('admin'), wrap(async (req, res) => {
+    await Business.updateOne({ _id: req.user.business }, { $unset: { analysisRules: 1 } });
+    await audit(req, 'analysis_rules_reset', { user: req.user });
+    res.json({ rules: { ...DEFAULT_RULES }, defaults: DEFAULT_RULES });
+  }));
+
+  // ---------- Data export (JSON or CSV) ----------
+  const sendExport = async (req, res, processes, label) => {
+    const [rules, business] = await Promise.all([getRules(req.user.business), Business.findById(req.user.business).select('name').lean()]);
+    const day = new Date().toISOString().slice(0, 10);
+    const { format } = req.validatedQuery;
+    await audit(req, 'data_exported', { user: req.user, meta: { format, scope: label, processes: processes.length } });
+    res.set('Content-Disposition', `attachment; filename="flowlens-${label}-${day}.${format}"`);
+    if (format === 'csv') return res.type('text/csv; charset=utf-8').send(toCsv(processes, rules));
+    res.type('application/json').send(JSON.stringify(toExportObject(processes, rules, business), null, 2));
+  };
+  router.get('/export/processes', limit.heavy, validate(exportQuerySchema, 'query'), wrap(async (req, res) => {
+    await sendExport(req, res, await loadAllProcesses({ business: req.user.business }), 'processes');
+  }));
+  router.get('/processes/:id/export', limit.heavy, validate(exportQuerySchema, 'query'), wrap(async (req, res) => {
+    const p = await loadProcess(req.params.id);
+    if (!p) return notFound(res);
+    await sendExport(req, res, [p], 'process');
+  }));
 
   // ---------- Security log (owners and admins) ----------
   router.get('/audit', requireRole('admin'), wrap(async (req, res) => {
@@ -213,8 +265,8 @@ export default function routes(limit) {
 
   // ---------- Dashboard ----------
   router.get('/dashboard', wrap(async (req, res) => {
-    const list = await loadAllProcesses({ business: req.user.business });
-    const rows = list.map((p) => ({ p, a: analyzeProcess(p) }));
+    const [list, rules] = await Promise.all([loadAllProcesses({ business: req.user.business }), getRules(req.user.business)]);
+    const rows = list.map((p) => ({ p, a: analyzeProcess(p, rules) }));
     const asIs = rows.filter((r) => r.p.version === 'as-is');
     const sum = (f) => rows.reduce((t, r) => t + f(r), 0);
     const scored = rows.filter((r) => r.a.metrics.steps);
