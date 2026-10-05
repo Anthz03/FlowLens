@@ -2,7 +2,7 @@
 // and by the build step that creates static HTML pages for search engines and Google's reviewers (scripts/prerender-legal.mjs).
 import { LEGAL } from './legal.js';
 
-const { appName: APP, owner: OWNER, contactEmail: EMAIL, country: COUNTRY } = LEGAL;
+const { appName: APP, owner: OWNER, contactName: CONTACT, contactEmail: EMAIL, country: COUNTRY } = LEGAL;
 
 // Each section: a title and a list of blocks. A block is a paragraph (string) or { list: [...] }. **bold** is supported.
 export const PRIVACY = [
@@ -80,7 +80,7 @@ export const PRIVACY = [
   { title: 'Changes to this policy', body: [
     'We may update this policy. When we make an important change we will update the date at the top. Using the service after a change means you accept the updated policy.',
   ] },
-  { title: 'Contact', body: [`${OWNER} · ${EMAIL}`] },
+  { title: 'Contact', body: [`${OWNER} · ${CONTACT} · ${EMAIL}`] },
 ];
 
 export const TERMS = [
@@ -132,7 +132,7 @@ export const TERMS = [
     'We may update these Terms. When we make an important change we will update the date at the top. Using the Service after a change means you accept the updated Terms.',
   ] },
   { title: 'Governing law', body: [`These Terms are governed by the laws of ${COUNTRY}.`] },
-  { title: 'Contact', body: [`${OWNER} · ${EMAIL}`] },
+  { title: 'Contact', body: [`${OWNER} · ${CONTACT} · ${EMAIL}`] },
 ];
 
 export const PAGES = {

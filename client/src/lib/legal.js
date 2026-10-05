@@ -2,8 +2,9 @@
 export const LEGAL = {
   appName: 'FlowLens',
   siteUrl: 'https://flow-lens-eight.vercel.app',
-  owner: '[YOUR NAME OR ORGANIZATION]',   // who operates FlowLens
-  contactEmail: '[YOUR CONTACT EMAIL]',    // where privacy and deletion requests go
-  country: '[YOUR COUNTRY]',               // whose laws govern the Terms
+  owner: 'FlowLens Org',                   // who operates FlowLens
+  contactName: 'Kyle Magalona',            // the person to contact
+  contactEmail: 'kyleanthiny7@gmail.com',  // where privacy and deletion requests go (shown publicly)
+  country: 'the Philippines',              // whose laws govern the Terms
   updated: 'October 6, 2026',
 };
