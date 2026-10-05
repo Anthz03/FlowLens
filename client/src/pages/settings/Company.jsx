@@ -17,7 +17,13 @@ export default function Company() {
   const [msg, flash] = useFlash();
 
   useEffect(() => {
-    api.businesses().then(([b]) => { setBiz(b); setForm({ name: b.name || '', industry: b.industry || '', size: b.size || '', departments: b.departments || [] }); }).catch((e) => setError(e.message));
+    let cancelled = false; // a late response must never overwrite what the person has already typed
+    api.businesses().then(([b]) => {
+      if (cancelled) return;
+      setBiz(b);
+      setForm({ name: b.name || '', industry: b.industry || '', size: b.size || '', departments: b.departments || [] });
+    }).catch((e) => { if (!cancelled) setError(e.message); });
+    return () => { cancelled = true; };
   }, []);
   if (error) return <ErrorBox error={error} />;
   if (!form) return <Loading />;

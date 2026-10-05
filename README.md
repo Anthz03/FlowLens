@@ -81,7 +81,8 @@ An editable React Flow diagram. Move boxes, add decisions, label branches and ed
 | <img src="docs/icons/git-compare.svg" width="16" height="16" align="absmiddle" alt=""> **AS-IS vs TO-BE** | Side-by-side comparison with percentage improvement and a "what changed" list |
 | <img src="docs/icons/file-text.svg" width="16" height="16" align="absmiddle" alt=""> **Process Details** | Roles, departments, tools, steps, inputs and outputs in one place |
 | <img src="docs/icons/lock.svg" width="16" height="16" align="absmiddle" alt=""> **Accounts** | Email + password sign-in (optional Google sign-in), one private workspace per business |
-| <img src="docs/icons/graduation-cap.svg" width="16" height="16" align="absmiddle" alt=""> **Guided onboarding** | A short setup questionnaire, then a 17-step interactive tour of every page |
+| <img src="docs/icons/graduation-cap.svg" width="16" height="16" align="absmiddle" alt=""> **Guided onboarding** | A short setup questionnaire, then an 18-step interactive tour of every page |
+| <img src="docs/icons/settings.svg" width="16" height="16" align="absmiddle" alt=""> **Settings** | Profile, password and sessions, company details, team and roles, **analysis rules**, activity log, and **data export** (CSV, JSON, print or PDF) |
 
 ## <img src="docs/icons/search.svg" width="24" height="24" align="absmiddle" alt=""> How the analysis works
 
@@ -95,6 +96,8 @@ FlowLens uses **simple, transparent rules**, not AI. You can read them in [`serv
 | <img src="docs/icons/copy.svg" width="16" height="16" align="absmiddle" alt=""> **Duplicate steps** | Two steps with very similar names |
 | <img src="docs/icons/user-x.svg" width="16" height="16" align="absmiddle" alt=""> **Unclear responsibility** | A step with no role, or a role with no department |
 | <img src="docs/icons/file-pen.svg" width="16" height="16" align="absmiddle" alt=""> **Poor documentation** | Missing descriptions, tools, inputs or outputs |
+
+Every threshold can be tuned per company by an owner or admin in **Settings → Analysis rules** (for example, what counts as a bottleneck), and every score, finding and TO-BE suggestion follows the new rules.
 
 ### <img src="docs/icons/git-compare.svg" width="20" height="20" align="absmiddle" alt=""> From AS-IS to TO-BE
 
@@ -332,12 +335,14 @@ All routes are under `/api` and need a signed-in session, except `/api/auth/*`. 
 
 | Area | Endpoints |
 |---|---|
-| **Auth** | `POST /auth/register` · `POST /auth/login` · `POST /auth/google` · `GET /auth/me` · `GET /auth/config` · `POST /auth/onboarding` · `POST /auth/change-password` · `POST /auth/logout-all` |
+| **Auth** | `POST /auth/register` · `POST /auth/login` · `POST /auth/google` · `GET /auth/me` · `GET /auth/config` · `POST /auth/onboarding` · `PUT /auth/profile` · `POST /auth/change-password` · `POST /auth/logout-all` |
 | **Processes** | `GET /processes` · `GET /processes/:id` · `POST /processes` · `PUT /processes/:id` · `DELETE /processes/:id` |
 | **TO-BE** | `POST /processes/:id/duplicate` with `{ "optimize": true }` |
 | **Steps** | `GET/POST /processes/:id/steps` · `GET/PUT/DELETE /steps/:id` |
 | **Analysis** | `GET/POST /analysis/process/:id` · `GET /analysis` · `PUT/DELETE /analysis/:id` |
-| **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `GET /businesses` · `PUT /businesses/:id` (team and company changes need admin or owner) |
+| **Users & businesses** | `GET/POST /users` · `PUT/DELETE /users/:id` · `POST /users/:id/reset-password` · `GET /businesses` · `PUT /businesses/:id` (team and company changes need admin or owner) |
+| **Settings** | `GET /settings/analysis-rules` · `PUT/DELETE /settings/analysis-rules` (admin or owner) |
+| **Export** | `GET /export/processes?format=csv\|json` · `GET /processes/:id/export?format=csv\|json` |
 | **Security log** | `GET /audit` (admin or owner) |
 | **Dashboard** | `GET /dashboard` |
 

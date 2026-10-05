@@ -30,7 +30,11 @@ export default function AnalysisRules() {
   const [msg, flash] = useFlash(9000);
 
   const apply = (d) => { setData(d); setForm(Object.fromEntries(FIELDS.map((f) => [f.key, show(f, d.rules[f.key])]))); };
-  useEffect(() => { api.analysisRules().then(apply).catch((e) => setError(e.message)); }, []);
+  useEffect(() => {
+    let cancelled = false; // a late response must never overwrite what the person has already typed
+    api.analysisRules().then((d) => { if (!cancelled) apply(d); }).catch((e) => { if (!cancelled) setError(e.message); });
+    return () => { cancelled = true; };
+  }, []);
   if (error) return <ErrorBox error={error} />;
   if (!form) return <Loading />;
 
