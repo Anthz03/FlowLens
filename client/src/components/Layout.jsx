@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../lib/auth.jsx';
+import Logo from './Logo.jsx';
 import Tour, { tourKey } from './Tour.jsx';
 import { LayoutDashboard, FolderKanban, PlusCircle, Compass, Workflow, Activity, GitCompare, Menu, X, Plus, HelpCircle, LogOut } from 'lucide-react';
 
@@ -17,10 +18,7 @@ const nav = [
 function Sidebar({ onNavigate }) {
   return (
     <aside data-tour="sidebar" className="flex h-full w-64 flex-col border-r border-slate-200 bg-white">
-      <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5 px-5 py-5">
-        <div className="rounded-lg bg-brand-600 p-1.5 text-white"><Workflow size={20} /></div>
-        <span className="text-lg font-semibold text-slate-900">FlowLens</span>
-      </Link>
+      <Link to="/" onClick={onNavigate} aria-label="FlowLens home" className="block px-5 py-5"><Logo className="h-9 w-auto" /></Link>
       <nav className="flex-1 space-y-1 px-3">
         {nav.map(({ to, label, icon: Icon, end }) => (
           <NavLink key={to} to={to} end={end} onClick={onNavigate}

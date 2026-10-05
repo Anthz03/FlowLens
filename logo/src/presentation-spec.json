@@ -1,0 +1,31 @@
+{
+  "brand": "FlowLens",
+  "tagline": "Know your processes. Improve them with confidence.",
+  "brief": "Process discovery and improvement software for small and medium businesses. The identity should feel clear, approachable and professional - easy for non-technical teams, never intimidating.",
+  "adjectives": ["clear", "approachable", "insightful", "professional"],
+  "criteria": "Success: recognisable at 16 px, works in one colour, avoids the magnifying-glass-over-flowchart cliche, and reads as both an F and a process flow.",
+  "industry": "saas",
+  "nav": ["Discover", "Analyze", "Improve", "Sign in"],
+  "brand_color": "#4F46E5",
+  "greyscale": false,
+  "designer": "FlowLens identity",
+  "round": 2,
+  "concepts": [
+    {
+      "name": "Flow F",
+      "symbol": "../final/flowlens-symbol.svg",
+      "lockup": "../final/flowlens-horizontal.svg",
+      "symbol_on_tile": "../final/flowlens-symbol-white.svg",
+      "lockup_on_dark": "../final/flowlens-horizontal-on-dark.svg",
+      "tile_color": "#4F46E5",
+      "idea": "An F drawn as a process: one path that branches into two nodes.",
+      "rationale": [
+        "Reads as the letter F and as a tiny flowchart - no explanation needed",
+        "Rounded, friendly strokes suit non-technical SME teams",
+        "Holds up at 16 px and in one colour; heavier small-size cut for favicons"
+      ]
+    }
+  ],
+  "recommendation": "Flow F - the most ownable and the clearest at small sizes, and it extends naturally into icons, diagrams and empty states.",
+  "next_steps": ["Approve the direction", "Roll out across the app and site", "Extend into illustrations and empty states"]
+}

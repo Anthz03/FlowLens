@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Workflow, Building2, UserRound, Target, ArrowLeft, ArrowRight, Check, Plus } from 'lucide-react';
+import { Building2, UserRound, Target, ArrowLeft, ArrowRight, Check, Plus } from 'lucide-react';
 import { api } from '../lib/api.js';
+import Logo from '../components/Logo.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { Button, Field, TextInput, TextArea, Select, ErrorBox } from '../components/ui.jsx';
 import { DEPARTMENTS } from '../lib/constants.js';
@@ -83,7 +84,7 @@ export default function Onboarding() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-2xl">
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-2"><div className="rounded-lg bg-brand-600 p-1.5 text-white"><Workflow size={20} /></div><span className="text-lg font-semibold text-slate-900">FlowLens</span></div>
+          <Logo className="h-9 w-auto" />
           <button onClick={() => finish(true)} disabled={busy} className="text-sm text-slate-500 hover:text-slate-700 hover:underline">Skip for now</button>
         </div>
 

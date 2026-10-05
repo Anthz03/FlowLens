@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { Workflow, Eye, Compass, Activity, GitCompare } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
 import { api } from '../lib/api.js';
+import Logo from '../components/Logo.jsx';
 import { Button, Field, TextInput, ErrorBox } from '../components/ui.jsx';
 
 const points = [
@@ -82,7 +83,7 @@ export default function Login() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-center bg-brand-700 p-14 text-white lg:flex">
-        <div className="mb-8 flex items-center gap-3"><div className="rounded-lg bg-white/15 p-2"><Workflow size={26} /></div><span className="text-2xl font-semibold">FlowLens</span></div>
+        <Logo className="mb-10 h-12 w-auto self-start" markColor="#FFFFFF" textColor="#FFFFFF" />
         <h2 className="mb-3 text-3xl font-semibold leading-tight">Know your processes.<br />Improve them with confidence.</h2>
         <p className="mb-10 max-w-md text-brand-100">Process discovery and improvement for small and medium businesses.</p>
         <ul className="space-y-5">{points.map(([Icon, t, d]) => (
@@ -91,7 +92,7 @@ export default function Login() {
       </div>
       <div className="flex items-center justify-center p-6">
         <form onSubmit={submit} className="w-full max-w-sm">
-          <div className="mb-6 flex items-center gap-2 lg:hidden"><div className="rounded-lg bg-brand-600 p-1.5 text-white"><Workflow size={20} /></div><span className="text-lg font-semibold">FlowLens</span></div>
+          <Logo className="mb-6 h-9 w-auto lg:hidden" />
           <h1 className="text-2xl font-semibold text-slate-900">{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
           <p className="mb-6 mt-1 text-sm text-slate-500">{mode === 'login' ? 'Sign in to manage your business processes.' : 'Set up your business workspace in a minute.'}</p>
           <ErrorBox error={error} />
