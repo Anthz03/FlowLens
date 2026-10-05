@@ -162,11 +162,14 @@ router.get('/dashboard', wrap(async (req, res) => {
       avgScore: scored.length ? Math.round(scored.reduce((t, r) => t + r.a.score, 0) / scored.length) : 0,
       manualTasks: sum((r) => r.a.metrics.manualTasks), bottlenecks: sum((r) => r.a.metrics.bottlenecks),
       handoffs: sum((r) => r.a.metrics.handoffs),
+      // minutes of work done by hand vs. by a system, across all AS-IS processes
+      manualMinutes: asIs.reduce((t, r) => t + r.p.steps.filter((s) => s.type === 'task' && s.isManual).reduce((m, s) => m + (s.estimatedTime || 0), 0), 0),
+      autoMinutes: asIs.reduce((t, r) => t + r.p.steps.filter((s) => s.type === 'task' && !s.isManual).reduce((m, s) => m + (s.estimatedTime || 0), 0), 0),
     },
     scores: rows.map((r) => ({ id: r.p._id, name: r.p.name, version: r.p.version, score: r.a.score })),
     departments: Object.entries(departments).map(([name, value]) => ({ name, value })),
     issues: issues.slice(0, 6),
-    recent: rows.slice(0, 5).map((r) => ({ _id: r.p._id, name: r.p.name, department: r.p.department, status: r.p.status, version: r.p.version, score: r.a.score, updatedAt: r.p.updatedAt })),
+    recent: rows.slice(0, 5).map((r) => ({ _id: r.p._id, name: r.p.name, department: r.p.department, status: r.p.status, version: r.p.version, score: r.a.score, updatedAt: r.p.updatedAt, steps: r.p.steps.map(({ key, name, role, type, isManual, estimatedTime, order }) => ({ key, name, role, type, isManual, estimatedTime, order })) })),
   });
 }));
 

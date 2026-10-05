@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Workflow, Activity, Pencil, Copy, Trash2, GitCompare, Hand, Zap } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Loading, ErrorBox, Badge, DataTable, ScoreRing, ConfirmModal, statusTone } from '../components/ui.jsx';
+import ProcessStrip, { StripLegend } from '../components/ProcessStrip.jsx';
 import { fmtTime } from '../lib/constants.js';
 
 const Chips = ({ items, empty = 'None' }) => (items.length ? <div className="flex flex-wrap gap-1.5">{items.map((i) => <Badge key={i}>{i}</Badge>)}</div> : <span className="text-sm text-slate-400">{empty}</span>);
@@ -34,6 +35,11 @@ export default function ProcessDetails() {
         <Button variant="ghost" onClick={() => setConfirm(true)} aria-label="Delete process"><Trash2 size={16} className="text-red-500" /></Button>
       </PageHeader>
       <ErrorBox error={error} />
+
+      <Card title="Process at a glance" className="mb-6">
+        <ProcessStrip steps={p.steps} className="h-12 w-full" />
+        <div className="mt-3"><StripLegend /></div>
+      </Card>
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card title="Overview" className="lg:col-span-2">

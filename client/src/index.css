@@ -1,13 +1,75 @@
 @import "tailwindcss";
 
+/* Design tokens. One accent (the logo's indigo), one cool-grey family (slate), tinted shadows. */
 @theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: "Outfit Variable", "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, monospace;
+
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
   --color-brand-500: #6366f1;
   --color-brand-600: #4f46e5;
   --color-brand-700: #4338ca;
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-ink-700: #3b3791;
+  --color-ink-800: #2b2873;
+  --color-ink-900: #1e1b4b;
+  --color-ink-950: #15133a;
+
+  --color-page: #f5f6fb;
+
+  --shadow-card: 0 1px 2px rgb(30 27 75 / 0.04), 0 6px 18px -8px rgb(30 27 75 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(30 27 75 / 0.05), 0 16px 32px -12px rgb(30 27 75 / 0.22);
+  --shadow-button: 0 1px 0 rgb(255 255 255 / 0.18) inset, 0 6px 14px -6px rgb(79 70 229 / 0.65);
 }
 
-body { @apply bg-slate-50 text-slate-800 antialiased; }
+html { scroll-behavior: smooth; }
+
+body {
+  @apply text-slate-800 antialiased;
+  font-variant-numeric: tabular-nums;
+  background:
+    radial-gradient(900px 420px at 88% -8%, rgb(79 70 229 / 0.07), transparent 65%),
+    var(--color-page);
+}
+
+/* Faint grain so large flat areas don't feel sterile */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+#root { position: relative; z-index: 1; }
+
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.015em; text-wrap: balance; }
+p { text-wrap: pretty; }
+
+::selection { background: var(--color-brand-200); color: var(--color-ink-900); }
+
+:focus-visible { outline: 2px solid var(--color-brand-500); outline-offset: 2px; border-radius: 6px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
+
 .react-flow__attribution { display: none; }
+
+/* Skeleton loaders */
+.skeleton {
+  background: linear-gradient(90deg, #e8eaf4 25%, #f3f4fa 50%, #e8eaf4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.75rem;
+}
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .skeleton { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}

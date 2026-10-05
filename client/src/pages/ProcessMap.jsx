@@ -18,6 +18,9 @@ const edgeDefaults = {
   labelBgPadding: [6, 3], labelBgBorderRadius: 4, labelStyle: { fontSize: 12, fontWeight: 600 },
 };
 
+// Keep diagrams readable: never zoom out past 50% on first view (long processes can be panned).
+const FIT = { padding: 0.08, minZoom: 0.5, maxZoom: 1 };
+
 function autoLayout(nodes, edges) {
   const depth = Object.fromEntries(nodes.map((n) => [n.id, 0]));
   for (let i = 0; i < nodes.length; i++) {
@@ -28,7 +31,7 @@ function autoLayout(nodes, edges) {
   const levels = {};
   nodes.forEach((n) => (levels[depth[n.id]] ||= []).push(n));
   const pos = {};
-  Object.entries(levels).forEach(([d, list]) => list.forEach((n, i) => { pos[n.id] = { x: 300 + (i - (list.length - 1) / 2) * 280, y: Number(d) * 140 }; }));
+  Object.entries(levels).forEach(([d, list]) => list.forEach((n, i) => { pos[n.id] = { x: 300 + (i - (list.length - 1) / 2) * 280, y: Number(d) * 125 }; }));
   return nodes.map((n) => ({ ...n, position: pos[n.id] }));
 }
 
@@ -53,7 +56,7 @@ function Editor({ id }) {
       let es = p.edges?.length ? p.edges.map((e) => ({ id: e.key || uid(), source: e.source, target: e.target, label: e.label })) : p.steps.slice(1).map((s, i) => ({ id: uid(), source: p.steps[i].key, target: s.key, label: '' }));
       if (!p.steps.some((s) => s.position?.x != null)) ns = autoLayout(ns, es);
       setProcess(p); setNodes(ns); setEdges(es.map(styleEdge));
-      setTimeout(() => flow.fitView({ padding: 0.2 }), 50);
+      setTimeout(() => flow.fitView(FIT), 50);
     }).catch((e) => setError(e.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -89,7 +92,7 @@ function Editor({ id }) {
     markDirty();
   };
 
-  const layout = () => { setNodes((ns) => autoLayout(ns, edges)); markDirty(); setTimeout(() => flow.fitView({ padding: 0.2 }), 50); };
+  const layout = () => { setNodes((ns) => autoLayout(ns, edges)); markDirty(); setTimeout(() => flow.fitView(FIT), 50); };
 
   const save = async () => {
     setSaving(true); setError('');
@@ -108,7 +111,7 @@ function Editor({ id }) {
   const selectedEdge = edges.find((e) => e.id === selEdge);
 
   return (
-    <div className="flex h-[calc(100vh-7.5rem)] flex-col">
+    <div className="flex h-[calc(100vh-7rem)] lg:h-[calc(100vh-9.5rem)] flex-col">
       <div data-tour="map-toolbar" className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900">{process.name}<Badge tone={process.version === 'to-be' ? 'brand' : 'blue'}>{process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge></h1>

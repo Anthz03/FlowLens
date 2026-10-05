@@ -39,12 +39,12 @@ export default function Repository() {
         <div className="relative min-w-56 flex-1">
           <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search processes…" aria-label="Search processes"
-            className="w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm shadow-sm transition hover:border-slate-300 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
         </div>
         <div className="w-40"><Select placeholder="All departments" options={depts} value={dept} onChange={(e) => setDept(e.target.value)} aria-label="Department" /></div>
         <div className="w-36"><Select placeholder="All statuses" options={STATUSES} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status" /></div>
         <div className="w-36"><Select placeholder="AS-IS & TO-BE" options={[{ value: 'as-is', label: 'AS-IS' }, { value: 'to-be', label: 'TO-BE' }]} value={version} onChange={(e) => setVersion(e.target.value)} aria-label="Version" /></div>
-        <div className="flex rounded-lg border border-slate-300 bg-white p-0.5">
+        <div className="flex rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm">
           {[['grid', LayoutGrid], ['table', List]].map(([v, Icon]) => (
             <button key={v} onClick={() => setView(v)} aria-label={`${v} view`} className={`rounded-md p-1.5 ${view === v ? 'bg-brand-50 text-brand-600' : 'text-slate-400'}`}><Icon size={18} /></button>
           ))}

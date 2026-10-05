@@ -82,9 +82,13 @@ export default function Login() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="hidden flex-col justify-center bg-brand-700 p-14 text-white lg:flex">
-        <Logo className="mb-10 h-12 w-auto self-start" markColor="#FFFFFF" textColor="#FFFFFF" />
-        <h2 className="mb-3 text-3xl font-semibold leading-tight">Know your processes.<br />Improve them with confidence.</h2>
+      <div className="hidden flex-col justify-center relative overflow-hidden bg-gradient-to-br from-ink-900 via-ink-900 to-ink-800 p-14 text-white lg:flex">
+        <svg aria-hidden viewBox="0 0 400 300" className="pointer-events-none absolute -bottom-28 -right-28 w-[34rem] opacity-[0.10]" fill="none" stroke="#A5B4FC" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M60 270V110a30 30 0 0 1 30-30h210" /><path d="M60 180h140" /><path d="M200 180v50h130" /><path d="M300 80v60h80" />
+          <circle cx="320" cy="80" r="15" fill="#A5B4FC" /><circle cx="220" cy="180" r="15" fill="#A5B4FC" /><circle cx="350" cy="230" r="15" fill="#A5B4FC" /><circle cx="390" cy="140" r="15" fill="#A5B4FC" />
+        </svg>
+        <Logo className="relative mb-10 h-12 w-auto self-start" markColor="#FFFFFF" textColor="#FFFFFF" />
+        <h2 className="relative mb-4 text-4xl font-semibold leading-[1.1] tracking-tight">Know your processes.<br />Improve them with confidence.</h2>
         <p className="mb-10 max-w-md text-brand-100">Process discovery and improvement for small and medium businesses.</p>
         <ul className="space-y-5">{points.map(([Icon, t, d]) => (
           <li key={t} className="flex gap-3"><Icon size={20} className="mt-0.5 shrink-0 text-brand-100" /><div><p className="font-medium">{t}</p><p className="text-sm text-brand-100">{d}</p></div></li>))}

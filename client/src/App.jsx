@@ -12,6 +12,7 @@ import ProcessMap from './pages/ProcessMap.jsx';
 import Analysis from './pages/Analysis.jsx';
 import Compare from './pages/Compare.jsx';
 import ProcessDetails from './pages/ProcessDetails.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 function RequireAuth() {
   const { user, ready } = useAuth();
@@ -43,9 +44,9 @@ export default function App() {
           <Route path="analysis" element={<Analysis />} />
           <Route path="compare" element={<Compare />} />
           <Route path="discovery" element={<Discovery />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
