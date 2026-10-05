@@ -35,7 +35,7 @@ export default function Repository() {
         <Button to="/processes/new"><Plus size={16} />Create process</Button>
       </PageHeader>
       <ErrorBox error={error} />
-      <div className="mb-5 flex flex-wrap items-center gap-3">
+      <div data-tour="repo-filters" className="mb-5 flex flex-wrap items-center gap-3">
         <div className="relative min-w-56 flex-1">
           <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search processes…" aria-label="Search processes"
@@ -54,7 +54,7 @@ export default function Repository() {
       {filtered.length === 0 ? (
         <EmptyState title="No processes found" text="Try different filters, or document a new process." action={<Button to="/processes/new">Create process</Button>} />
       ) : view === 'grid' ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={setToDelete} />)}</div>
+        <div data-tour="repo-list" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{filtered.map((p) => <ProcessCard key={p._id} process={p} onDelete={setToDelete} />)}</div>
       ) : (
         <div className="rounded-xl border border-slate-200 bg-white p-2 shadow-sm">
           <DataTable rows={filtered} columns={[

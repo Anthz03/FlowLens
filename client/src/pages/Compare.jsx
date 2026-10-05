@@ -57,7 +57,7 @@ export default function Compare() {
     <div>
       <PageHeader title="AS-IS vs TO-BE Comparison" subtitle="See how the improved process compares with how work happens today." />
       <ErrorBox error={error} />
-      <Card className="mb-6">
+      <Card className="mb-6" tour="compare-select">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="AS-IS process (current)"><Select placeholder="Select a process…" options={asisOptions} value={asisId} onChange={(e) => pickAsis(e.target.value)} /></Field>
           <Field label="TO-BE process (improved)"><Select placeholder={asisId ? 'Select a TO-BE version…' : 'Choose AS-IS first'} options={tobeOptions} value={tobeId} disabled={!asisId} onChange={(e) => setParams({ asis: asisId, ...(e.target.value ? { tobe: e.target.value } : {}) })} /></Field>
@@ -75,7 +75,7 @@ export default function Compare() {
         : (
           <>
             <div className="mb-6 grid gap-6 lg:grid-cols-3">
-              <Card title="Comparison" className="lg:col-span-2">
+              <Card title="Comparison" className="lg:col-span-2" tour="compare-table">
                 <DataTable rowKey={(r) => r.label} rows={ROWS} columns={[
                   { header: 'Metric', render: (r) => <span className="font-medium text-slate-800">{r.label}</span> },
                   { header: 'AS-IS', render: (r) => (r.fmt || String)(r.get(asis)), className: 'text-right tabular-nums' },

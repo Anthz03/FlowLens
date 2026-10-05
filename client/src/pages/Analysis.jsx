@@ -40,12 +40,12 @@ function AnalysisView({ id }) {
       <PageHeader title="Process Analysis" subtitle={`${process.name} · ${process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}`}>
         <Button variant="secondary" onClick={async () => { setBusy(true); await load(); setBusy(false); }} disabled={busy}><RefreshCw size={16} />Re-run analysis</Button>
         <Button variant="secondary" to={`/processes/${id}/map`}>View map</Button>
-        {process.version !== 'to-be' && <Button onClick={makeToBe} disabled={busy}><Wand2 size={16} />Generate TO-BE</Button>}
+        {process.version !== 'to-be' && <Button data-tour="analysis-tobe" onClick={makeToBe} disabled={busy}><Wand2 size={16} />Generate TO-BE</Button>}
       </PageHeader>
       <ErrorBox error={error} />
 
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
-        <Card title="Process Health Score" className="lg:col-span-1">
+        <Card title="Process Health Score" className="lg:col-span-1" tour="analysis-score">
           <div className="flex flex-col items-center gap-5">
             <ScoreRing score={a.score} />
             <div className="w-full space-y-3">{Object.entries(a.categories).map(([k, v]) => <ScoreBar key={k} label={k} value={v} />)}</div>
@@ -84,7 +84,7 @@ function AnalysisView({ id }) {
         <ul className="space-y-2">{a.recommendations.map((r, i) => <li key={i} className="flex gap-2.5 text-sm text-slate-700"><Lightbulb size={16} className="mt-0.5 shrink-0 text-amber-500" />{r}</li>)}</ul>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div data-tour="analysis-findings" className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         <AnalysisCard icon={Hand} title="Manual tasks" count={f('manual').length} items={f('manual')} empty="No manual tasks." />
         <AnalysisCard icon={Timer} title="Bottlenecks" count={f('bottleneck').length} tone="red" items={f('bottleneck')} empty="No bottlenecks detected." />
         <AnalysisCard icon={Shuffle} title="Handoffs" count={m.handoffs} tone="brand" items={f('handoff').filter((x) => x.severity !== 'low' || m.handoffs <= 6)} empty="No handoffs between roles." />

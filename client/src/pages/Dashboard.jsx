@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FolderKanban, HeartPulse, Hand, Timer, Plus, Compass, AlertTriangle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 import { api } from '../lib/api.js';
-import { PageHeader, Card, StatCard, Button, Loading, ErrorBox, Badge, ScoreBadge, ScoreRing, DataTable, statusTone } from '../components/ui.jsx';
+import { PageHeader, Card, StatCard, Button, Loading, ErrorBox, Badge, ScoreBadge, DataTable, statusTone } from '../components/ui.jsx';
 import { scoreColor } from '../lib/constants.js';
 
 const PIE = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
@@ -22,7 +22,7 @@ export default function Dashboard() {
         <Button to="/processes/new"><Plus size={16} />Create process</Button>
       </PageHeader>
 
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div data-tour="dash-stats" className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={FolderKanban} label="Processes" value={t.processes} hint={`${t.asIs} AS-IS · ${t.toBe} TO-BE`} />
         <StatCard icon={HeartPulse} label="Average health score" value={`${t.avgScore}/100`} tone={t.avgScore >= 75 ? 'green' : t.avgScore >= 50 ? 'amber' : 'red'} />
         <StatCard icon={Hand} label="Manual tasks" value={t.manualTasks} tone="amber" hint="across all processes" />
@@ -66,7 +66,7 @@ export default function Dashboard() {
             { header: 'Health', render: (p) => <ScoreBadge score={p.score} /> },
           ]} />
         </Card>
-        <Card title="Top issues to fix">
+        <Card title="Top issues to fix" tour="dash-issues">
           {d.issues.length === 0 ? <p className="text-sm text-slate-400">No high-severity issues. Nice work.</p> : (
             <ul className="space-y-3">
               {d.issues.map((f, i) => (

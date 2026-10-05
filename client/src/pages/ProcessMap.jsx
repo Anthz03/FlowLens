@@ -109,7 +109,7 @@ function Editor({ id }) {
 
   return (
     <div className="flex h-[calc(100vh-7.5rem)] flex-col">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div data-tour="map-toolbar" className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900">{process.name}<Badge tone={process.version === 'to-be' ? 'brand' : 'blue'}>{process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge></h1>
           <p className="text-xs text-slate-500">Drag to arrange · drag from a node's bottom dot to another node to connect · select and press Delete to remove</p>
@@ -125,7 +125,7 @@ function Editor({ id }) {
       </div>
       <ErrorBox error={error} />
       <div className="flex min-h-0 flex-1 gap-4">
-        <div className="min-w-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div data-tour="map-canvas" className="min-w-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white">
           <ReactFlow nodes={displayNodes} edges={edges} nodeTypes={nodeTypes} onNodesChange={(c) => { onNodesChange(c); if (c.some((x) => x.type === 'position' || x.type === 'remove')) markDirty(); }}
             onEdgesChange={(c) => { onEdgesChange(c); if (c.some((x) => x.type === 'remove')) markDirty(); }} onConnect={onConnect}
             onSelectionChange={({ nodes: n, edges: e }) => { setSelNode(n[0]?.id ?? null); setSelEdge(!n.length ? e[0]?.id ?? null : null); }}
@@ -135,7 +135,7 @@ function Editor({ id }) {
             <MiniMap pannable zoomable className="!hidden md:!block" nodeColor={(n) => (n.type === 'decision' ? '#38bdf8' : n.type === 'start' ? '#34d399' : '#cbd5e1')} />
           </ReactFlow>
         </div>
-        <aside className="hidden w-80 shrink-0 overflow-y-auto rounded-xl border border-slate-200 bg-white p-4 lg:block">
+        <aside data-tour="map-panel" className="hidden w-80 shrink-0 overflow-y-auto rounded-xl border border-slate-200 bg-white p-4 lg:block">
           {selected ? (
             <>
               <div className="mb-3 flex items-center justify-between"><h2 className="text-sm font-semibold text-slate-800">Edit step</h2>

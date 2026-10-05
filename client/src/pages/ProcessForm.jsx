@@ -80,7 +80,7 @@ export default function ProcessForm() {
       </PageHeader>
       <ErrorBox error={error} />
 
-      <Card title="Process details" className="mb-6">
+      <Card title="Process details" className="mb-6" tour="form-details">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Process name *" className="sm:col-span-2"><TextInput value={form.name} onChange={setF('name')} placeholder="e.g. Customer Order Fulfillment" /></Field>
           <Field label="Description" className="sm:col-span-2"><TextArea value={form.description} onChange={setF('description')} placeholder="What is this process for, and when does it start and end?" /></Field>
@@ -90,7 +90,7 @@ export default function ProcessForm() {
         </div>
       </Card>
 
-      <Card title={`Process steps (${steps.length})`} action={<div className="flex gap-2">
+      <Card tour="form-steps" title={`Process steps (${steps.length})`} action={<div className="flex gap-2">
         <Button size="sm" variant="secondary" onClick={() => setEditing({ isNew: true, step: newStep({ type: 'start', name: 'Start', estimatedTime: 0, isManual: false }) })}>Add start</Button>
         <Button size="sm" onClick={() => setEditing({ isNew: true, step: newStep() })}><Plus size={14} />Add step</Button>
       </div>}>

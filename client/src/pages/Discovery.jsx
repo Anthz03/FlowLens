@@ -62,7 +62,7 @@ export default function Discovery() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div data-tour="discovery-wizard" className="mx-auto max-w-4xl">
       <PageHeader title="Process Discovery" subtitle="Not documented yet? Describe how work really happens in plain words and we will turn it into a process." />
       <ol className="mb-6 flex items-center gap-2 text-sm">
         {['About the process', 'Describe the steps', 'Review & create'].map((l, i) => (
