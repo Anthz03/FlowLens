@@ -208,7 +208,7 @@ Then open **http://localhost:5173**.
 | **Password** | `demo1234` |
 
 > [!WARNING]
-> The demo account exists only while `SEED_DEMO=true` (local development). It is public in this README, so it must **not** exist on a public server. See [Deploying](#-deploying).
+> The demo account exists only while `SEED_DEMO=true` (local development). It is public in this README, so it must **not** exist on a public server.
 
 On the login page, **Try the demo** from the landing page, or the **Fill in demo account** button, fills these in for you. You can also **create your own account**: you will answer a few quick questions about your company, then a guided tour walks you through every page. Take the tour again any time with **Take the tour** in the top bar.
 
@@ -327,7 +327,7 @@ While the consent screen is in *Testing* mode, only the test users you list can 
 | `npm run seed` | Load demo data into an empty database |
 | `npm --prefix server start` | Start the API only (no auto-reload) |
 | `npm --prefix server test` | Run the security tests |
-| `npm --prefix server run preflight` | Pre-launch check: settings, database and demo account (see [Deploying](#-deploying)) |
+| `npm --prefix server run preflight` | Pre-launch check: production settings, database and demo account |
 | `npm --prefix server run remove-demo` | Show (or with `-- --yes`, delete) the public demo account |
 | `npm --prefix client run dev` | Start the web app only |
 | `npm --prefix client run build` | Create a production build in `client/dist` |
@@ -350,116 +350,6 @@ All routes are under `/api` and need a signed-in session, except `/api/auth/*`. 
 | **Export** | `GET /export/processes?format=csv\|json` · `GET /processes/:id/export?format=csv\|json` |
 | **Security log** | `GET /audit` (admin or owner) |
 | **Dashboard** | `GET /dashboard` |
-
-## <img src="docs/icons/globe.svg" width="24" height="24" align="absmiddle" alt=""> Deploying
-
-FlowLens deploys as **three parts**. The website and the API live on different hosts, so the website is built knowing the API's address.
-
-```text
- Visitor's browser
-        |
-        |  https://your-site.vercel.app        (website: static files)
-        v
- +-----------------+   https calls to the API   +--------------------+      +----------------+
- |  Vercel         | -------------------------> |  Render            | ---> | MongoDB Atlas  |
- |  client/        |   (CORS allow-list)        |  server/ (Node)    |      | (database)     |
- +-----------------+                            +--------------------+      +----------------+
-```
-
-> [!NOTE]
-> The steps below use **Vercel**, **Render** and **MongoDB Atlas**, which all have free plans (check their current limits). Any static host and any Node host work the same way: build the website with `VITE_API_URL`, and set the API's environment variables.
-
-### 1. Put the code on GitHub
-Push this repository to GitHub. `server/.env` is git-ignored, so your secrets stay on your computer.
-
-### 2. Create the production database (MongoDB Atlas)
-1. Create a **new cluster or a new database** for production. Do not reuse your development database, because it holds the demo account.
-2. **Database Access** → add a user with a **long random password** and the *readWrite* role on the `flowlens` database only.
-3. **Network Access** → Render's free plan has no fixed IP address, so allow `0.0.0.0/0`. The strong password and the dedicated user are what protect the database.
-4. **Connect → Drivers** → copy the connection string and add the database name: `mongodb+srv://USER:PASSWORD@CLUSTER.mongodb.net/flowlens`
-5. Turn on **backups** (Atlas → Backup) and set an **alert** for unusual activity if your plan allows it.
-
-### 3. Deploy the API on Render
-1. Render dashboard → **New → Blueprint** → choose your repository. Render reads [`render.yaml`](render.yaml).
-2. Fill in the values it asks for:
-   - `MONGODB_URI`: the connection string from step 2
-   - `CORS_ORIGINS`: for now `https://placeholder.example` (you will replace it in step 5)
-   - `GOOGLE_CLIENT_ID`: optional
-3. `AUTH_SECRET` is generated for you. `NODE_ENV=production`, `SEED_DEMO=false`, `USE_MEMORY_FALLBACK=false` and `TRUST_PROXY=1` are already set.
-4. When it finishes, open `https://YOUR-API.onrender.com/api/health`. It should show `{"ok":true}`.
-
-> [!TIP]
-> Render's free plan puts the API to sleep when idle, so the first visit after a quiet period can take 30 to 60 seconds. A paid plan keeps it awake.
-
-### 4. Deploy the website on Vercel
-1. Vercel → **Add New → Project** → import the repository.
-2. Set **Root Directory** to `client` (the framework is detected as Vite).
-3. Under **Environment Variables** add `VITE_API_URL` = `https://YOUR-API.onrender.com` (no trailing slash and no `/api`).
-4. Deploy. Vercel applies [`client/vercel.json`](client/vercel.json): page routing for deep links, caching for built files, and security headers including a Content-Security-Policy.
-
-### 5. Connect the two
-On Render, set `CORS_ORIGINS` to your website's address **exactly**: `https://YOUR-SITE.vercel.app` (https, no trailing slash). Several addresses can be separated by commas. Then let Render redeploy.
-
-> [!NOTE]
-> Only the addresses listed in `CORS_ORIGINS` can use the API from a browser. Vercel preview deployments have their own addresses, so use your production address (or add the preview address while testing).
->
-> If you later use a custom API domain such as `api.example.com`, change `https://*.onrender.com` in the `connect-src` part of `client/vercel.json` to that domain, and redeploy the website.
-
-### Privacy Policy and Terms of Service
-FlowLens includes public pages at `/privacy` and `/terms`, linked from the landing page and the sign-up form. Before you launch:
-1. Open [`client/src/lib/legal.js`](client/src/lib/legal.js) and fill in **your name or organization**, a **contact email** (shown publicly) and your **country**.
-2. Read both pages and make sure they still match what the app does. If you add analytics, email sending or other services, update them.
-3. Have them reviewed by a qualified person before commercial use. They are plain-language drafts, not legal advice.
-
-### 6. Google sign-in (optional)
-In Google Cloud Console → your OAuth client, add `https://YOUR-SITE.vercel.app` under **Authorized JavaScript origins**, and publish the consent screen (**In production**) so people outside your test list can sign in. Make sure `GOOGLE_CLIENT_ID` is set on Render.
-
-To publish, open **Google Auth Platform → Branding** and fill in:
-
-| Field | Value |
-|---|---|
-| App name | `FlowLens` |
-| App home page | `https://YOUR-SITE.vercel.app` |
-| Privacy policy link | `https://YOUR-SITE.vercel.app/privacy` |
-| Terms of service link | `https://YOUR-SITE.vercel.app/terms` |
-
-Keep only the basic sign-in permissions (`openid`, `email`, `profile`) and do not upload a logo, which avoids Google's verification process. Then open **Audience → Publish app**. Google may still show an "unverified app" notice to some people.
-
-### 7. Run the pre-launch check
-Before you tell anyone, run the checker **with the same values you gave Render**. It checks the settings, connects to the database, and fails if the public demo account is still there.
-
-```bash
-cd server
-# macOS / Linux / Git Bash
-NODE_ENV=production AUTH_SECRET='<same value as on Render>' MONGODB_URI='<atlas uri>' \
-CORS_ORIGINS='https://YOUR-SITE.vercel.app' SEED_DEMO=false USE_MEMORY_FALLBACK=false TRUST_PROXY=1 \
-npm run preflight
-```
-
-```powershell
-# Windows PowerShell
-cd server
-$env:NODE_ENV='production'; $env:AUTH_SECRET='<same value as on Render>'; $env:MONGODB_URI='<atlas uri>'
-$env:CORS_ORIGINS='https://YOUR-SITE.vercel.app'; $env:SEED_DEMO='false'; $env:USE_MEMORY_FALLBACK='false'; $env:TRUST_PROXY='1'
-npm run preflight
-```
-
-If you must reuse a database that contains the demo account, remove it first. `npm run remove-demo` shows what would be deleted, and `npm run remove-demo -- --yes` deletes it.
-
-### Before you go public: checklist
-
-| | Item | How |
-|---|---|---|
-| ☐ | **No public demo account** | `SEED_DEMO=false`, fresh production database, checked by `npm run preflight` |
-| ☐ | **Strong secret** | `AUTH_SECRET` is generated by Render. In production the server refuses to start with a weak one |
-| ☐ | **HTTPS everywhere** | Provided by Vercel and Render. Security headers (HSTS, CSP, frame blocking) are set for you |
-| ☐ | **Only your website can call the API** | `CORS_ORIGINS` set to your exact `https://` address |
-| ☐ | **Real visitor IPs for rate limiting** | `TRUST_PROXY=1` on Render |
-| ☐ | **Database locked down** | Dedicated database user with a strong password, backups on |
-| ☐ | **Google sign-in works** | Your website is an authorized origin and the consent screen is published |
-| ☐ | **One API instance** | Rate limits are kept in memory. Use a shared store (such as Redis) before running several |
-| ☐ | **Email and password recovery** | Not built yet: lost passwords are reset by an owner in Settings |
-| ☐ | **Privacy policy and terms** | Not included. Add them before collecting real customer data |
 
 ## <img src="docs/icons/bandage.svg" width="24" height="24" align="absmiddle" alt=""> Troubleshooting
 
