@@ -256,7 +256,7 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm text-slate-500">
           <Logo className="h-7 w-auto" />
           <p>Discover, document and improve your business processes.</p>
-          <p className="flex gap-5"><Link to="/login" className="hover:text-ink-900">Sign in</Link><Link to={SIGN_UP} className="hover:text-ink-900">Create account</Link></p>
+          <p className="flex flex-wrap gap-x-5 gap-y-1"><Link to="/login" className="hover:text-ink-900">Sign in</Link><Link to={SIGN_UP} className="hover:text-ink-900">Create account</Link><Link to="/privacy" className="hover:text-ink-900">Privacy</Link><Link to="/terms" className="hover:text-ink-900">Terms</Link></p>
         </div>
       </footer>
     </div>

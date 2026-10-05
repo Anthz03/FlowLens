@@ -14,6 +14,7 @@ import Compare from './pages/Compare.jsx';
 import ProcessDetails from './pages/ProcessDetails.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Landing from './pages/Landing.jsx';
+import { Privacy, Terms } from './pages/Legal.jsx';
 import Settings from './pages/Settings.jsx';
 
 function RequireAuth() {
@@ -32,6 +33,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="login" element={<Login />} />
+      <Route path="privacy" element={<Privacy />} />
+      <Route path="terms" element={<Terms />} />
       <Route element={<RequireAuth />}>
         <Route path="welcome" element={<Onboarding />} />
         <Route element={<Layout />}>

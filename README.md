@@ -405,8 +405,25 @@ On Render, set `CORS_ORIGINS` to your website's address **exactly**: `https://YO
 >
 > If you later use a custom API domain such as `api.example.com`, change `https://*.onrender.com` in the `connect-src` part of `client/vercel.json` to that domain, and redeploy the website.
 
+### Privacy Policy and Terms of Service
+FlowLens includes public pages at `/privacy` and `/terms`, linked from the landing page and the sign-up form. Before you launch:
+1. Open [`client/src/lib/legal.js`](client/src/lib/legal.js) and fill in **your name or organization**, a **contact email** (shown publicly) and your **country**.
+2. Read both pages and make sure they still match what the app does. If you add analytics, email sending or other services, update them.
+3. Have them reviewed by a qualified person before commercial use. They are plain-language drafts, not legal advice.
+
 ### 6. Google sign-in (optional)
 In Google Cloud Console → your OAuth client, add `https://YOUR-SITE.vercel.app` under **Authorized JavaScript origins**, and publish the consent screen (**In production**) so people outside your test list can sign in. Make sure `GOOGLE_CLIENT_ID` is set on Render.
+
+To publish, open **Google Auth Platform → Branding** and fill in:
+
+| Field | Value |
+|---|---|
+| App name | `FlowLens` |
+| App home page | `https://YOUR-SITE.vercel.app` |
+| Privacy policy link | `https://YOUR-SITE.vercel.app/privacy` |
+| Terms of service link | `https://YOUR-SITE.vercel.app/terms` |
+
+Keep only the basic sign-in permissions (`openid`, `email`, `profile`) and do not upload a logo, which avoids Google's verification process. Then open **Audience → Publish app**. Google may still show an "unverified app" notice to some people.
 
 ### 7. Run the pre-launch check
 Before you tell anyone, run the checker **with the same values you gave Render**. It checks the settings, connects to the database, and fails if the public demo account is still there.

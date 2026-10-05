@@ -134,6 +134,11 @@ export default function Login() {
               {mode === 'login' ? 'Create an account' : 'Sign in'}
             </button>
           </p>
+          <p className="mt-4 text-center text-xs leading-relaxed text-slate-400">
+            By {mode === 'login' ? 'signing in' : 'creating an account'} you agree to our{' '}
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Terms of Service</a> and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Privacy Policy</a>.
+          </p>
         </form>
       </div>
     </div>
