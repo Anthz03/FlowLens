@@ -5,7 +5,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, BarC
 import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Loading, ErrorBox, ScoreRing, ScoreBar, AnalysisCard, Badge } from '../components/ui.jsx';
 import ProcessPicker from '../components/ProcessPicker.jsx';
-import { fmtTime } from '../lib/constants.js';
+import { fmtTime, SHOW_COMPARE } from '../lib/constants.js';
 
 function Metric({ label, value }) {
   return <div className="rounded-lg bg-slate-50 px-4 py-3"><p className="text-xs text-slate-500">{label}</p><p className="text-xl font-semibold text-slate-900">{value}</p></div>;
@@ -40,7 +40,7 @@ function AnalysisView({ id }) {
       <PageHeader title="Process Analysis" subtitle={`${process.name} · ${process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}`}>
         <Button variant="secondary" onClick={async () => { setBusy(true); await load(); setBusy(false); }} disabled={busy}><RefreshCw size={16} />Re-run analysis</Button>
         <Button variant="secondary" to={`/processes/${id}/map`}>View map</Button>
-        {process.version !== 'to-be' && <Button data-tour="analysis-tobe" onClick={makeToBe} disabled={busy}><Wand2 size={16} />Generate TO-BE</Button>}
+        {SHOW_COMPARE && process.version !== 'to-be' && <Button data-tour="analysis-tobe" onClick={makeToBe} disabled={busy}><Wand2 size={16} />Generate TO-BE</Button>}
       </PageHeader>
       <ErrorBox error={error} />
 

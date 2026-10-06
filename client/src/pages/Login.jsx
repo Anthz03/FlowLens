@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { SHOW_COMPARE } from '../lib/constants.js';
 import { Navigate, useSearchParams } from 'react-router-dom';
 import { Workflow, Eye, Compass, Activity, GitCompare } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
@@ -10,7 +11,7 @@ const points = [
   [Compass, 'Discover', 'Describe how work really happens in plain words.'],
   [Workflow, 'Visualize', 'Turn it into an editable flow diagram.'],
   [Activity, 'Analyze', 'Find manual work, bottlenecks and handoffs, with a health score.'],
-  [GitCompare, 'Improve', 'Create a TO-BE process and compare it with today.'],
+  [GitCompare, 'Improve', SHOW_COMPARE ? 'Create a TO-BE process and compare it with today.' : 'Get recommendations on what to automate, merge or reassign.'],
 ];
 
 let gsiPromise;

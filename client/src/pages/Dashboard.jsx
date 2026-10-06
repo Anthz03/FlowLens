@@ -6,7 +6,7 @@ import { api } from '../lib/api.js';
 import { Card, StatCard, Button, Loading, ErrorBox, Badge, ScoreBadge, ScoreRing, EmptyState, statusTone } from '../components/ui.jsx';
 import ProcessStrip, { StripLegend } from '../components/ProcessStrip.jsx';
 import { useAuth } from '../lib/auth.jsx';
-import { scoreColor, fmtTime } from '../lib/constants.js';
+import { scoreColor, fmtTime, SHOW_COMPARE } from '../lib/constants.js';
 
 const DEPT_COLORS = ['#4F46E5', '#818CF8', '#312E81', '#A5B4FC', '#6366F1', '#C7D2FE'];
 const tooltipStyle = { borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 8px 24px -8px rgb(30 27 75 / 0.25)', fontSize: 13 };
@@ -17,7 +17,8 @@ const NEXT_STEPS = {
   'Find problems and delays': ['Check a process for problems', '/analysis'],
   'Reduce manual work': ['See which tasks are done by hand', '/analysis'],
   'Make clear who is responsible': ['Add a process and assign owners', '/processes/new'],
-  'Plan and compare improvements': ['Compare today with a better version', '/compare'],
+  'Plan and compare improvements': SHOW_COMPARE ? ['Compare today with a better version', '/compare'] : ['See recommended improvements', '/analysis'],
+  'Plan improvements': ['See recommended improvements', '/analysis'],
   'Train new employees': ['Browse your process library', '/processes'],
 };
 
@@ -92,7 +93,7 @@ export default function Dashboard() {
       </section>
 
       <div data-tour="dash-stats" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={FolderKanban} label="Processes" value={t.processes} hint={`${t.asIs} AS-IS · ${t.toBe} TO-BE`} />
+        <StatCard icon={FolderKanban} label="Processes" value={t.processes} hint={SHOW_COMPARE ? `${t.asIs} AS-IS · ${t.toBe} TO-BE` : undefined} />
         <StatCard icon={HeartPulse} label="Average health score" value={`${t.avgScore}`} tone={t.avgScore >= 75 ? 'green' : t.avgScore >= 50 ? 'amber' : 'red'} hint="out of 100, higher is better" />
         <StatCard icon={Hand} label="Manual tasks" value={t.manualTasks} tone="amber" hint="done by hand today" />
         <StatCard icon={Timer} label="Possible bottlenecks" value={t.bottlenecks} tone="red" hint={`${t.handoffs} handoffs between people`} />
@@ -150,7 +151,7 @@ export default function Dashboard() {
                     <div className="min-w-0">
                       <Link to={`/processes/${p._id}`} className="block truncate font-medium text-ink-900 hover:text-brand-700">{p.name}</Link>
                       <div className="mt-1 flex flex-wrap gap-1.5">
-                        <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>
+                        {SHOW_COMPARE && <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>}
                         <Badge tone={statusTone[p.status]}>{p.status}</Badge>
                         {p.department && <Badge>{p.department}</Badge>}
                       </div>

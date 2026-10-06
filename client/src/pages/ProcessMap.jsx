@@ -11,7 +11,7 @@ import { Button, Loading, ErrorBox, Badge, Field, TextInput } from '../component
 import StepFields from '../components/StepFields.jsx';
 import ProcessPicker from '../components/ProcessPicker.jsx';
 import { nodeTypes } from '../components/FlowNodes.jsx';
-import { newStep, uid } from '../lib/constants.js';
+import { newStep, uid, SHOW_COMPARE } from '../lib/constants.js';
 
 const edgeDefaults = {
   type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed },
@@ -114,7 +114,7 @@ function Editor({ id }) {
     <div className="flex h-[calc(100vh-7rem)] lg:h-[calc(100vh-9.5rem)] flex-col">
       <div data-tour="map-toolbar" className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900">{process.name}<Badge tone={process.version === 'to-be' ? 'brand' : 'blue'}>{process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge></h1>
+          <h1 className="flex items-center gap-2 text-xl font-semibold text-slate-900">{process.name}{SHOW_COMPARE && <Badge tone={process.version === 'to-be' ? 'brand' : 'blue'}>{process.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>}</h1>
           <p className="text-xs text-slate-500">Drag to arrange · drag from a node's bottom dot to another node to connect · select and press Delete to remove</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

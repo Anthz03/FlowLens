@@ -5,13 +5,13 @@ import { api } from '../lib/api.js';
 import Logo from '../components/Logo.jsx';
 import { useAuth } from '../lib/auth.jsx';
 import { Button, Field, TextInput, TextArea, Select, ErrorBox } from '../components/ui.jsx';
-import { DEPARTMENTS } from '../lib/constants.js';
+import { DEPARTMENTS, SHOW_COMPARE } from '../lib/constants.js';
 
 export const INDUSTRIES = ['Retail & Wholesale', 'Food & Beverage', 'Manufacturing', 'Professional Services', 'Healthcare', 'Education & Training', 'Construction', 'Logistics & Transport', 'Technology / IT', 'Other'];
 export const SIZES = ['Just me', '2–10 people', '11–50 people', '51–250 people'];
 const ROLES = ['Owner / Founder', 'Manager', 'Operations / Process lead', 'Team member', 'Consultant', 'Student / Teacher', 'Other'];
 const SOURCES = ['Search engine (Google, Bing…)', 'Social media', 'Friend or colleague', 'School or training', 'Event or webinar', 'Other'];
-const GOALS = ['Write down how we work', 'Find problems and delays', 'Reduce manual work', 'Make clear who is responsible', 'Plan and compare improvements', 'Train new employees'];
+const GOALS = ['Write down how we work', 'Find problems and delays', 'Reduce manual work', 'Make clear who is responsible', SHOW_COMPARE ? 'Plan and compare improvements' : 'Plan improvements', 'Train new employees'];
 const DOCS = ['It is not written down (people just know)', 'Spreadsheets', 'Chat or messaging apps', 'Paper or notes', 'Word / PDF documents', 'Business software (ERP, CRM)'];
 
 // Selectable pill buttons; `multi` allows several answers.

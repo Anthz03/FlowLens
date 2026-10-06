@@ -89,7 +89,7 @@ export const TERMS = [
     'You must be at least 13 years old to use the Service.',
   ] },
   { title: 'What the Service does', body: [
-    `${APP} lets you describe business processes, view them as diagrams, receive rule-based analysis and scores, create improved versions, and compare them. The Service is a prototype. We may change, add or remove features at any time.`,
+    `${APP} lets you describe business processes, view them as diagrams, and receive rule-based analysis, scores and improvement suggestions. The Service is a prototype. We may change, add or remove features at any time.`,
   ] },
   { title: 'Your account', body: [
     { list: [

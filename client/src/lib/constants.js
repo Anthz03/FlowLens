@@ -1,3 +1,7 @@
+// The AS-IS vs TO-BE module (comparison page, "Generate TO-BE", TO-BE badges) is hidden from every user.
+// Set to true to show it again. Nothing is deleted: the code, API and data are untouched.
+export const SHOW_COMPARE = false;
+
 export const STEP_TYPES = [
   { value: 'start', label: 'Start' },
   { value: 'task', label: 'Task / Activity' },

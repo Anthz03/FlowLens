@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { SHOW_COMPARE } from '../lib/constants.js';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
 import { Card, Loading, Badge, ScoreBadge, EmptyState, Button } from './ui.jsx';
@@ -18,7 +19,7 @@ export default function ProcessPicker({ title, suffix }) {
           <Link key={p._id} to={`/processes/${p._id}/${suffix}`}>
             <Card className="transition-shadow hover:shadow-md">
               <div className="mb-2 flex items-start justify-between gap-2"><span className="font-medium text-slate-900">{p.name}</span><ScoreBadge score={p.analysis.score} /></div>
-              <div className="flex gap-1.5"><Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>{p.department && <Badge>{p.department}</Badge>}</div>
+              <div className="flex gap-1.5">{SHOW_COMPARE && <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>}{p.department && <Badge>{p.department}</Badge>}</div>
             </Card>
           </Link>
         ))}

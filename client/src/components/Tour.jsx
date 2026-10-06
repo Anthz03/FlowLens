@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { SHOW_COMPARE } from '../lib/constants.js';
 import { useNavigate } from 'react-router-dom';
 import { X, ArrowLeft, ArrowRight, Check, Lightbulb, Loader2 } from 'lucide-react';
 import { api } from '../lib/api.js';
@@ -11,11 +12,11 @@ function buildSteps(sample) {
   const id = sample?.asis?._id;
   const compare = sample?.tobe ? `/compare?asis=${id}&tobe=${sample.tobe._id}` : '/compare';
   const steps = [
-    { path: '/', title: 'Welcome to FlowLens 👋', text: 'FlowLens helps you write down how work gets done in your business, find what slows it down, and plan a better way.', list: ['Describe a process', 'See it as a diagram', 'Check it for problems', 'Compare with a better version'], tip: 'This tour takes about 2 minutes. You can skip it at any time.' },
+    { path: '/', title: 'Welcome to FlowLens 👋', text: 'FlowLens helps you write down how work gets done in your business, find what slows it down, and plan a better way.', list: ['Describe a process', 'See it as a diagram', 'Check it for problems', SHOW_COMPARE ? 'Compare with a better version' : 'Get recommendations'], tip: 'This tour takes about 2 minutes. You can skip it at any time.' },
     { path: '/', target: 'sidebar', title: 'The menu', text: 'This menu takes you to every page. We will visit them one by one, in the order you would normally use them.' },
     { path: '/', target: 'dash-stats', title: 'Dashboard: your summary', text: 'These boxes sum up all your processes. The Health Score goes from 0 to 100 — higher is better. "Manual tasks" are jobs done by hand. "Possible bottlenecks" are steps that take a very long time.' },
     { path: '/', target: 'dash-issues', title: 'What to fix first', text: 'The most urgent problems across all your processes.', tip: 'Click a problem to see the details.' },
-    { path: '/processes', target: 'repo-filters', title: 'Process Repository', text: 'This is your library of processes. Search or filter to find one quickly. "AS-IS" means how work is done today. "TO-BE" means the improved version.' },
+    { path: '/processes', target: 'repo-filters', title: 'Process Repository', text: `This is your library of processes. Search or filter to find one quickly.${SHOW_COMPARE ? ' "AS-IS" means how work is done today. "TO-BE" means the improved version.' : ''}` },
     { path: '/processes', target: 'repo-list', title: 'Your processes', text: 'Each card is one process, with its score. "Map" shows the diagram, "Analysis" shows the problems, and "Edit" lets you change it.' },
     { path: '/processes/new', target: 'form-details', title: 'Create a process (1 of 2)', text: 'First give your process a name and write one or two sentences about it.', tip: 'Example name: "Customer Order Fulfillment". Leave the status as Draft for now.' },
     { path: '/processes/new', target: 'form-steps', title: 'Create a process (2 of 2)', text: 'Now list the steps one by one with "Add step". For each step, say who does it, which tool they use (like Excel or email) and how many minutes it takes.', tip: 'Tick "Performed manually" if it is done by hand. Choose "Decision point" for yes/no questions.' },
@@ -33,7 +34,8 @@ function buildSteps(sample) {
   else steps.push({ path: '/compare', target: 'compare-select', title: 'Compare: before and after', text: 'Once you have a process, choose it here, create an improved version, and see both side by side with the percent improvement.' });
   steps.push({ path: '/settings', target: 'settings-tabs', title: 'Settings', text: 'Change your profile and password, set up your company and team, and download your data. You can also replay this tour from the Profile tab.', tip: 'Owners and admins also see Team and roles, Analysis rules and the Activity log.' });
   steps.push({ path: '/', target: 'help-button', title: 'You are ready! 🎉', text: 'A good first step: open Process Discovery and type in one real process from your business.', tip: 'Click "Take the tour" any time to see this guide again.' });
-  return steps;
+  // The comparison steps only make sense while the AS-IS vs TO-BE module is visible.
+  return SHOW_COMPARE ? steps : steps.filter((s) => s.target !== 'analysis-tobe' && !String(s.path).startsWith('/compare') && !String(s.target).startsWith('compare-'));
 }
 
 const here = () => window.location.pathname + window.location.search;

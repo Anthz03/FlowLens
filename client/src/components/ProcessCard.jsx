@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Layers, Clock, Hand, Trash2 } from 'lucide-react';
 import { Badge, ScoreBadge, statusTone } from './ui.jsx';
 import ProcessStrip from './ProcessStrip.jsx';
-import { fmtTime } from '../lib/constants.js';
+import { fmtTime, SHOW_COMPARE } from '../lib/constants.js';
 
 export default function ProcessCard({ process: p, onDelete }) {
   const m = p.analysis?.metrics || {};
@@ -16,7 +16,7 @@ export default function ProcessCard({ process: p, onDelete }) {
         <ScoreBadge score={p.analysis?.score ?? 0} />
       </div>
       <div className="mb-3 flex flex-wrap gap-1.5">
-        <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>
+        {SHOW_COMPARE && <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge>}
         <Badge tone={statusTone[p.status]}>{p.status}</Badge>
         {p.department && <Badge>{p.department}</Badge>}
       </div>

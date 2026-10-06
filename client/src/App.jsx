@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { SHOW_COMPARE } from './lib/constants.js';
 import { useAuth } from './lib/auth.jsx';
 import Layout from './components/Layout.jsx';
 import { Loading } from './components/ui.jsx';
@@ -47,7 +48,7 @@ export default function App() {
           <Route path="processes/:id/analysis" element={<Analysis />} />
           <Route path="map" element={<ProcessMap />} />
           <Route path="analysis" element={<Analysis />} />
-          <Route path="compare" element={<Compare />} />
+          <Route path="compare" element={SHOW_COMPARE ? <Compare /> : <Navigate to="/" replace />} />
           <Route path="discovery" element={<Discovery />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SHOW_COMPARE } from '../lib/constants.js';
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, FolderKanban, PlusCircle, Compass, Workflow, Activity, GitCompare, Menu, X, Plus, HelpCircle, LogOut, Sparkles, Settings } from 'lucide-react';
 import { useAuth } from '../lib/auth.jsx';
@@ -17,7 +18,7 @@ const groups = [
   ] },
   { label: 'Improve', items: [
     { to: '/analysis', label: 'Process Analysis', icon: Activity },
-    { to: '/compare', label: 'AS-IS vs TO-BE', icon: GitCompare },
+    ...(SHOW_COMPARE ? [{ to: '/compare', label: 'AS-IS vs TO-BE', icon: GitCompare }] : []),
   ] },
   { label: 'Account', items: [
     { to: '/settings', label: 'Settings', icon: Settings },

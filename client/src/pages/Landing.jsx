@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../lib/api.js';
+import { SHOW_COMPARE } from '../lib/constants.js';
 import { ArrowRight, Check, Compass, Workflow, Activity, GitCompare, Hand, Timer, Shuffle, UserX, Lock, MousePointerClick } from 'lucide-react';
 import Logo from '../components/Logo.jsx';
 import { ScoreRing, ScoreBar, Button } from '../components/ui.jsx';
@@ -50,17 +51,17 @@ function HeroVisual() {
       <div className="anim-fade-up relative rotate-[1.2deg] rounded-3xl border border-slate-200/70 bg-white p-6 shadow-lift">
         <div className="mb-3 flex items-center justify-between">
           <p className="font-display text-sm font-semibold text-ink-900">Customer order fulfillment</p>
-          <span className="rounded-md bg-sky-50 px-1.5 py-0.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">AS-IS</span>
+          {SHOW_COMPARE && <span className="rounded-md bg-sky-50 px-1.5 py-0.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-200">AS-IS</span>}
         </div>
         <FlowDiagram className="w-full" />
       </div>
       <div className="anim-float absolute -left-2 top-16 hidden rounded-2xl border border-slate-200/70 bg-white px-4 py-3 shadow-lift sm:block lg:-left-8">
         <p className="text-xs text-slate-400">Manual tasks</p>
-        <p className="font-display text-2xl font-semibold text-ink-900">9 <span className="text-emerald-600">→ 4</span></p>
+        <p className="font-display text-2xl font-semibold text-ink-900">9 {SHOW_COMPARE ? <span className="text-emerald-600">→ 4</span> : <span className="text-sm font-medium text-amber-600">found</span>}</p>
       </div>
       <div style={{ animationDelay: '-3s' }} className="anim-float absolute -bottom-0 right-0 flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white p-3 pr-5 shadow-lift lg:-right-4">
         <ScoreRing score={68} size={76} label={false} />
-        <div><p className="text-xs text-slate-400">Health score</p><p className="text-sm font-semibold text-emerald-600">+19 with the TO-BE</p></div>
+        <div><p className="text-xs text-slate-400">Health score</p>{SHOW_COMPARE ? <p className="text-sm font-semibold text-emerald-600">+19 with the TO-BE</p> : <p className="text-sm font-semibold text-amber-600">Room to improve</p>}</div>
       </div>
     </div>
   );
@@ -70,7 +71,7 @@ const steps = [
   { n: '01', icon: Compass, title: 'Describe', text: 'Type what happens in plain words, or fill in a simple form. Say who does each step and which tool they use.' },
   { n: '02', icon: Workflow, title: 'See it', text: 'FlowLens draws the process as a diagram that you can change by dragging boxes and arrows.' },
   { n: '03', icon: Activity, title: 'Check it', text: 'Get a health score and a clear list of manual tasks, slow steps, repeated steps and steps with nobody in charge.' },
-  { n: '04', icon: GitCompare, title: 'Improve it', text: 'Create a better version in one click, then compare today and tomorrow side by side.' },
+  { n: '04', icon: GitCompare, title: 'Improve it', text: SHOW_COMPARE ? 'Create a better version in one click, then compare today and tomorrow side by side.' : 'Get clear recommendations on what to automate, merge or reassign, then update your process.' },
 ];
 
 function SectionTitle({ eyebrow, title, children, className = '' }) {
@@ -198,13 +199,14 @@ export default function Landing() {
                 </div>
               </Reveal>
 
-              <Reveal as="article" delay={0} className={`${panel} lg:col-span-2`}>
+              <Reveal as="article" delay={0} className={`${panel} ${SHOW_COMPARE ? 'lg:col-span-2' : 'lg:col-span-6'}`}>
                 <p className="flex items-center gap-2 text-sm font-semibold text-brand-600"><Workflow size={16} />Editable process map</p>
                 <h3 className="mt-2 font-display text-xl font-semibold text-ink-900">Drag, connect, done</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-500">Move boxes, add decisions and label branches. Slow and manual steps stand out at a glance.</p>
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-inset ring-slate-100"><ProcessStrip steps={[{ type: 'start', order: 0 }, ...[1, 2, 3, 4, 5, 6].map((o) => ({ type: 'task', isManual: o !== 5, estimatedTime: o === 3 ? 60 : 10, order: o })), { type: 'end', order: 7 }]} className="h-8 w-full" /><div className="mt-3"><StripLegend /></div></div>
               </Reveal>
 
+              {SHOW_COMPARE && (
               <Reveal as="article" delay={80} className={`${panel} lg:col-span-4`}>
                 <p className="flex items-center gap-2 text-sm font-semibold text-brand-600"><GitCompare size={16} />AS-IS vs TO-BE</p>
                 <h3 className="mt-2 font-display text-2xl font-semibold text-ink-900">See exactly what a better process saves</h3>
@@ -217,6 +219,7 @@ export default function Landing() {
                   </tbody>
                 </table>
               </Reveal>
+              )}
             </div>
           </div>
         </section>

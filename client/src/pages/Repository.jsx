@@ -4,7 +4,7 @@ import { Plus, Search, LayoutGrid, List } from 'lucide-react';
 import { api } from '../lib/api.js';
 import { PageHeader, Button, Loading, ErrorBox, EmptyState, TextInput, Select, DataTable, Badge, ScoreBadge, ConfirmModal, statusTone } from '../components/ui.jsx';
 import ProcessCard from '../components/ProcessCard.jsx';
-import { fmtTime, STATUSES } from '../lib/constants.js';
+import { fmtTime, STATUSES, SHOW_COMPARE } from '../lib/constants.js';
 import { useAuth } from '../lib/auth.jsx';
 
 export default function Repository() {
@@ -46,7 +46,7 @@ export default function Repository() {
         </div>
         <div className="w-40"><Select placeholder="All departments" options={depts} value={dept} onChange={(e) => setDept(e.target.value)} aria-label="Department" /></div>
         <div className="w-36"><Select placeholder="All statuses" options={STATUSES} value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status" /></div>
-        <div className="w-36"><Select placeholder="AS-IS & TO-BE" options={[{ value: 'as-is', label: 'AS-IS' }, { value: 'to-be', label: 'TO-BE' }]} value={version} onChange={(e) => setVersion(e.target.value)} aria-label="Version" /></div>
+        {SHOW_COMPARE && <div className="w-36"><Select placeholder="AS-IS & TO-BE" options={[{ value: 'as-is', label: 'AS-IS' }, { value: 'to-be', label: 'TO-BE' }]} value={version} onChange={(e) => setVersion(e.target.value)} aria-label="Version" /></div>}
         <div className="flex rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm">
           {[['grid', LayoutGrid], ['table', List]].map(([v, Icon]) => (
             <button key={v} onClick={() => setView(v)} aria-label={`${v} view`} className={`rounded-md p-1.5 ${view === v ? 'bg-brand-50 text-brand-600' : 'text-slate-400'}`}><Icon size={18} /></button>
@@ -63,7 +63,7 @@ export default function Repository() {
           <DataTable rows={filtered} columns={[
             { header: 'Process', render: (p) => <Link to={`/processes/${p._id}`} className="font-medium text-slate-900 hover:text-brand-700">{p.name}</Link> },
             { header: 'Department', field: 'department' },
-            { header: 'Type', render: (p) => <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge> },
+            ...(SHOW_COMPARE ? [{ header: 'Type', render: (p) => <Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge> }] : []),
             { header: 'Status', render: (p) => <Badge tone={statusTone[p.status]}>{p.status}</Badge> },
             { header: 'Steps', render: (p) => p.analysis.metrics.steps },
             { header: 'Time', render: (p) => fmtTime(p.analysis.metrics.estimatedTime) },

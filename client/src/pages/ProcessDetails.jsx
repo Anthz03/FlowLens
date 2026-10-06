@@ -5,7 +5,7 @@ import { api } from '../lib/api.js';
 import { PageHeader, Card, Button, Loading, ErrorBox, Badge, DataTable, ScoreRing, ConfirmModal, statusTone } from '../components/ui.jsx';
 import ProcessStrip, { StripLegend } from '../components/ProcessStrip.jsx';
 import ExportMenu from '../components/ExportMenu.jsx';
-import { fmtTime } from '../lib/constants.js';
+import { fmtTime, SHOW_COMPARE } from '../lib/constants.js';
 import { useAuth } from '../lib/auth.jsx';
 
 const Chips = ({ items, empty = 'None' }) => (items.length ? <div className="flex flex-wrap gap-1.5">{items.map((i) => <Badge key={i}>{i}</Badge>)}</div> : <span className="text-sm text-slate-400">{empty}</span>);
@@ -36,7 +36,7 @@ export default function ProcessDetails() {
         <Button variant="secondary" to={`/processes/${id}/map`}><Workflow size={16} />Map</Button>
         <Button variant="secondary" to={`/processes/${id}/analysis`}><Activity size={16} />Analysis</Button>
         <ExportMenu processId={id} />
-        {p.version !== 'to-be' && <Button variant="secondary" onClick={toBe}><Copy size={16} />Duplicate as TO-BE</Button>}
+        {SHOW_COMPARE && p.version !== 'to-be' && <Button variant="secondary" onClick={toBe}><Copy size={16} />Duplicate as TO-BE</Button>}
         {user.permission !== 'member' && <Button variant="ghost" onClick={() => setConfirm(true)} aria-label="Delete process"><Trash2 size={16} className="text-red-500" /></Button>}
       </PageHeader>
       <ErrorBox error={error} />
@@ -49,7 +49,7 @@ export default function ProcessDetails() {
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card title="Overview" className="lg:col-span-2">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
-            <div><dt className="text-slate-500">Type</dt><dd className="mt-1"><Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge></dd></div>
+            {SHOW_COMPARE && <div><dt className="text-slate-500">Type</dt><dd className="mt-1"><Badge tone={p.version === 'to-be' ? 'brand' : 'blue'}>{p.version === 'to-be' ? 'TO-BE' : 'AS-IS'}</Badge></dd></div>}
             <div><dt className="text-slate-500">Status</dt><dd className="mt-1"><Badge tone={statusTone[p.status]}>{p.status}</Badge></dd></div>
             <div><dt className="text-slate-500">Department</dt><dd className="mt-1 font-medium">{p.department || '—'}</dd></div>
             <div><dt className="text-slate-500">Steps</dt><dd className="mt-1 font-medium">{m.steps}</dd></div>
@@ -59,13 +59,13 @@ export default function ProcessDetails() {
             <div className="col-span-2 sm:col-span-3"><dt className="mb-1 text-slate-500">Departments involved</dt><dd><Chips items={m.departments} /></dd></div>
             <div className="col-span-2 sm:col-span-3"><dt className="mb-1 text-slate-500">Tools & systems</dt><dd><Chips items={m.tools} /></dd></div>
           </dl>
-          {p.toBeVersions?.length > 0 && (
+          {SHOW_COMPARE && p.toBeVersions?.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-4 text-sm">
               <GitCompare size={16} className="text-brand-600" />TO-BE versions:
               {p.toBeVersions.map((t) => <Link key={t._id} className="font-medium text-brand-600 hover:underline" to={`/compare?asis=${id}&tobe=${t._id}`}>{t.name}</Link>)}
             </div>
           )}
-          {p.baseProcess && <div className="mt-5 border-t border-slate-100 pt-4 text-sm"><Link className="font-medium text-brand-600 hover:underline" to={`/compare?asis=${p.baseProcess}&tobe=${id}`}>Compare with its AS-IS process →</Link></div>}
+          {SHOW_COMPARE && p.baseProcess && <div className="mt-5 border-t border-slate-100 pt-4 text-sm"><Link className="font-medium text-brand-600 hover:underline" to={`/compare?asis=${p.baseProcess}&tobe=${id}`}>Compare with its AS-IS process →</Link></div>}
         </Card>
         <Card title="Health score"><div className="flex justify-center"><ScoreRing score={a.score} /></div>
           <Link to={`/processes/${id}/analysis`} className="mt-3 block text-center text-sm font-medium text-brand-600 hover:underline">View full analysis</Link></Card>
